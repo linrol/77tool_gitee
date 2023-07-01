@@ -1,7 +1,12 @@
 package com.linrol.cn.tool.utils;
 
-import java.io.InputStreamReader;
-import java.io.LineNumberReader;
+import java.io.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,35 +20,41 @@ public class ShellUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(ShellUtils.class);
 
+    public static String workPath;
+
+    public static void init(String path) {
+        workPath = path;
+    }
+
+    public static boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
+
     public static Ret cmd(String command) throws Exception{
         try {
-            logger.info("exec shell command：{}", command);
-            Process process = Runtime.getRuntime().exec(command);
-            int code = process.waitFor();
-            String msg = execOutput(process);
-            return Ret.of(code, msg);
+            logger.info("exec cmd：{}", command);
+            ProcessBuilder builder = new ProcessBuilder().directory(new File(workPath));
+            builder.command(isWindows ? "cmd.exe" : "sh", isWindows ? "/c" : "-c", command);
+            StreamGobbler streamGobbler = new StreamGobbler(builder.start());
+            Future<Ret> future = Executors.newSingleThreadExecutor().submit(streamGobbler);
+            return future.get(120, TimeUnit.SECONDS);
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
         }
     }
 
-    public static String execOutput(Process process) throws Exception {
-        if (process == null) {
-            return null;
+    private static class StreamGobbler implements Callable<Ret> {
+        private Process process;
+        public StreamGobbler(Process process) {
+            this.process = process;
         }
-        InputStreamReader ir = new InputStreamReader(process.getInputStream());
-        LineNumberReader input = new LineNumberReader(ir);
-        String line;
-        StringBuilder output = new StringBuilder();
-        while ((line = input.readLine()) != null) {
-            output.append(line).append("\n");
+
+        @Override
+        public Ret call() throws InterruptedException {
+            int code = process.waitFor();
+            InputStream inputStream = code != 0 ? process.getErrorStream() : process.getInputStream();
+            InputStreamReader reader = new InputStreamReader(inputStream);
+            String ret = new BufferedReader(reader).lines().collect(Collectors.joining("\n"));
+            return Ret.of(code, ret);
         }
-        input.close();
-        ir.close();
-        if (output.length() > 0) {
-            return output.toString();
-        }
-        return null;
     }
 }

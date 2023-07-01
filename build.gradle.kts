@@ -26,6 +26,10 @@ tasks {
         targetCompatibility = "11"
     }
 
+    buildSearchableOptions{
+        enabled = false
+    }
+
     patchPluginXml {
         sinceBuild.set("212")
         untilBuild.set("222.*")

@@ -22,7 +22,9 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-
+        <!-- Add your extensions here -->
+        <toolWindow id="77tool" canCloseContents="true" anchor="bottom"
+                    factoryClass="com.linrol.cn.tool.toolwindow.MslToolWindowFactory"/>
     </extensions>
     <actions>
         <group id="com.linrol.cn.tool.77toolGroup" text="77Tool" popup="true">
