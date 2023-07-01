@@ -35,7 +35,7 @@ public class ShellUtils {
             builder.command(isWindows ? "cmd.exe" : "sh", isWindows ? "/c" : "-c", command);
             StreamGobbler streamGobbler = new StreamGobbler(builder.start());
             Future<Ret> future = Executors.newSingleThreadExecutor().submit(streamGobbler);
-            return future.get(120, TimeUnit.SECONDS);
+            return future.get(30, TimeUnit.SECONDS);
         } catch (Exception e) {
             e.printStackTrace();
             throw e;

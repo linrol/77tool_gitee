@@ -38,6 +38,5 @@ public class ToolWindowConsole {
             console.setOutputPaused(false);
         }
         console.print(s + "\n", ConsoleViewContentType.NORMAL_OUTPUT);
-        return;
     }
 }

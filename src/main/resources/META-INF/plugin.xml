@@ -23,7 +23,7 @@
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
-        <toolWindow id="77tool" canCloseContents="true" anchor="bottom"
+        <toolWindow id="77tool" canCloseContents="false" anchor="bottom"
                     factoryClass="com.linrol.cn.tool.toolwindow.MslToolWindowFactory"/>
     </extensions>
     <actions>
