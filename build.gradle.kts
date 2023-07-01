@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.linrol.cn"
-version = "1.0.1"
+version = "1.0.2"
 
 repositories {
     mavenCentral()
@@ -31,8 +31,8 @@ tasks {
     }
 
     patchPluginXml {
-        sinceBuild.set("212")
-        untilBuild.set("222.*")
+        sinceBuild.set("191")
+        untilBuild.set("231.*")
     }
 
     signPlugin {
