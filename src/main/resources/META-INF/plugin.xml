@@ -5,7 +5,7 @@
 
     <!-- Public plugin name should be written in Title Case.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
-    <name>Tool</name>
+    <name>77tool</name>
 
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
     <vendor email="linrolmail@gmail.com" url="https://linrol.cn">linrol</vendor>
@@ -13,7 +13,7 @@
     <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
-    <description><![CDATA[ 77Tool for branch. support branch created mr、delete local branch an more]]></description>
+    <description><![CDATA[ 77tool for branch. support branch created mr、delete local branch an more]]></description>
 
     <!-- Product and plugin compatibility requirements.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
@@ -27,7 +27,7 @@
                     factoryClass="com.linrol.cn.tool.toolwindow.MslToolWindowFactory"/>
     </extensions>
     <actions>
-        <group id="com.linrol.cn.tool.77toolGroup" text="77Tool" popup="true">
+        <group id="com.linrol.cn.tool.77toolGroup" text="77tool" popup="true">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="mr"/>
             <action id="mr" class="com.linrol.cn.tool.MergeRequest" text="Create Merge Request" description="Create merge request To current branch">
             </action>
