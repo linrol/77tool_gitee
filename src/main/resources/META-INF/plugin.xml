@@ -10,6 +10,21 @@
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
     <vendor email="linrolmail@gmail.com" url="https://linrol.cn">linrol</vendor>
 
+    <change-notes><![CDATA[
+
+        <b>Version 1.0.3</b>
+        <ul>
+            <li>Switch Git4Idea plugin call git</li>
+        </ul>
+
+        <b>Version 1.0.2</b>
+        <ul>
+            <li>Use shell script impl created merge request</li>
+            <li>Init 77tool</li>
+        </ul>
+    ]]>
+    </change-notes>
+
     <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
@@ -18,6 +33,8 @@
     <!-- Product and plugin compatibility requirements.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.vcs</depends>
+    <depends>Git4Idea</depends>
 
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
@@ -29,7 +46,8 @@
     <actions>
         <group id="com.linrol.cn.tool.77toolGroup" text="77tool" popup="true">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="mr"/>
-            <action id="mr" class="com.linrol.cn.tool.MergeRequest" text="Create Merge Request" description="Create merge request To current branch">
+            <!-- com.linrol.cn.tool.MergeRequest -->>
+            <action id="mr" class="com.linrol.cn.tool.branch.MergeRequestAction" text="Create Merge Request" description="Create merge request To current branch">
             </action>
         </group>
     </actions>

@@ -39,4 +39,11 @@ public class ToolWindowConsole {
         }
         console.print(s + "\n", ConsoleViewContentType.NORMAL_OUTPUT);
     }
+
+    public static void log(Project p, String s) {
+        if (project == null) {
+            project = p;
+        }
+        log(s);
+    }
 }
