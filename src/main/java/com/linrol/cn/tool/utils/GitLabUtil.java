@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.linrol.cn.tool.utils.MessageUtil.showErrorDialog;
+// import static com.linrol.cn.tool.utils.MessageUtil.showErrorDialog;
 
 /**
  * GitLab specific untils
@@ -103,7 +103,7 @@ public class GitLabUtil {
         Git git = ServiceManager.getService(Git.class);
         GitCommandResult result = git.runCommand(handler);
         if (result.getExitCode() != 0) {
-            showErrorDialog(project, "New remote origin cannot be added to this project.", "Cannot Add New Remote");
+            // showErrorDialog(project, "New remote origin cannot be added to this project.", "Cannot Add New Remote");
             return false;
         }
         // catch newly added remote
@@ -124,12 +124,12 @@ public class GitLabUtil {
         try {
             version = manager.getVersion(project);
         } catch (Exception e) {
-            showErrorDialog(project, "Cannot find git executable.", "Cannot Find Git");
+            // showErrorDialog(project, "Cannot find git executable.", "Cannot Find Git");
             return false;
         }
 
         if (!version.isSupported()) {
-            showErrorDialog(project, "Your version of git is not supported.", "Cannot Find Git");
+            // showErrorDialog(project, "Your version of git is not supported.", "Cannot Find Git");
             return false;
         }
         return true;
