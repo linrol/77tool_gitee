@@ -21,7 +21,6 @@ import git4idea.config.GitExecutableManager;
 import git4idea.config.GitVersion;
 import git4idea.repo.GitRepository;
 import git4idea.repo.GitRepositoryManager;
-import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,6 +33,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 // import static com.linrol.cn.tool.utils.MessageUtil.showErrorDialog;
+import static com.linrol.cn.tool.utils.StringUtils.isBlank;
 
 /**
  * GitLab specific untils
@@ -75,9 +75,9 @@ public class GitLabUtil {
             if (matcher.matches()) {
                 String group3 = matcher.group(3);
                 String group7 = matcher.group(7);
-                if (StringUtils.isNotEmpty(group3)) {
+                if (isBlank(group3)) {
                     fromUrlHost = group3;
-                } else if (StringUtils.isNotEmpty(group7)) {
+                } else if (!isBlank(group7)) {
                     fromUrlHost = group7;
                 }
             }

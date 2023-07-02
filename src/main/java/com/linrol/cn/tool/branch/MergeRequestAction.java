@@ -15,12 +15,13 @@ import git4idea.commands.GitCommandResult;
 import git4idea.repo.GitRemote;
 import git4idea.repo.GitRepository;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
+
+import static com.linrol.cn.tool.utils.StringUtils.isBlank;
 
 
 public class MergeRequestAction extends AnAction {
@@ -66,7 +67,7 @@ public class MergeRequestAction extends AnAction {
             return;
         }
         String url = repository.getRemotes().stream().flatMap(m -> m.getPushUrls().stream()).findAny().orElse(null);
-        if (StringUtils.isBlank(url)) {
+        if (isBlank(url)) {
             return;
         }
         GitLocalBranch currentBranch = repository.getCurrentBranch();
@@ -74,7 +75,7 @@ public class MergeRequestAction extends AnAction {
             return;
         }
         String branch = currentBranch.getName();
-        if (StringUtils.isBlank(branch)) {
+        if (isBlank(branch)) {
             return;
         }
         push(new GitCmd(project, repository), url, branch);
@@ -99,7 +100,7 @@ public class MergeRequestAction extends AnAction {
 
     private boolean needPush(GitCmd cmd, String branch) {
         String logRet = cmd.build(GitCommand.LOG, branch, "^origin").run().getOutputAsJoinedString();
-        boolean need = StringUtils.isNotBlank(logRet);
+        boolean need = !isBlank(logRet);
         if (!need) {
             String rootName = cmd.getRoot().getName();
             cmd.log(String.format("工程【%s】分支【%s】没有需要push的代码!!!", rootName, branch));
@@ -109,7 +110,7 @@ public class MergeRequestAction extends AnAction {
 
     private void commit(GitCmd cmd) {
         String title = hasStash(cmd);
-        if (StringUtils.isBlank(title)) {
+        if (isBlank(title)) {
             return;
         }
         cmd.build(GitCommand.ADD, ".").run();
@@ -118,11 +119,11 @@ public class MergeRequestAction extends AnAction {
 
     private String hasStash(GitCmd cmd) {
         GitCommandResult ret = cmd.build(GitCommand.STATUS, "-s").run();
-        if (StringUtils.isBlank(ret.getOutputAsJoinedString())) {
+        if (isBlank(ret.getOutputAsJoinedString())) {
             return null;
         }
         String title = cmd.showInputDialog();
-        if (StringUtils.isBlank(title)) {
+        if (isBlank(title)) {
             cmd.log("您取消了操作");
             return null;
         }
@@ -132,4 +133,5 @@ public class MergeRequestAction extends AnAction {
     private String geTimeStr() {
         return new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis());
     }
+
 }
