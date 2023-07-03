@@ -5,6 +5,9 @@ import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 
 public class ToolWindowConsole {
     private static Project project;
@@ -37,7 +40,8 @@ public class ToolWindowConsole {
         if (console.isOutputPaused()) {
             console.setOutputPaused(false);
         }
-        console.print(s + "\n", ConsoleViewContentType.NORMAL_OUTPUT);
+        String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
+        console.print(time + " " + s + "\n", ConsoleViewContentType.NORMAL_OUTPUT);
     }
 
     public static void log(Project p, String s) {
