@@ -17,11 +17,11 @@ import git4idea.repo.GitRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
 import static com.linrol.cn.tool.utils.StringUtils.isBlank;
+import static com.linrol.cn.tool.utils.TimeUtils.getCurrentTime;
 
 
 public class MergeRequestAction extends AnAction {
@@ -86,7 +86,7 @@ public class MergeRequestAction extends AnAction {
         if (!needPush(cmd, branch)) {
             return null;
         }
-        String tmpBranch = geTimeStr();
+        String tmpBranch = "77tool_mr_" + getCurrentTime("yyyyMMddHHmmss");
         GitCommandResult ret = cmd.build(GitCommand.PUSH).config(false, false, url)
                 .addParameters("origin")
                 .addParameters(String.format("head:%s", tmpBranch))
@@ -128,10 +128,6 @@ public class MergeRequestAction extends AnAction {
             return null;
         }
         return title;
-    }
-
-    private String geTimeStr() {
-        return new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis());
     }
 
 }
