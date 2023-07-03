@@ -1,11 +1,11 @@
 package com.linrol.cn.tool.utils;
 
 import com.intellij.concurrency.JobScheduler;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Ref;
 import com.intellij.openapi.util.ThrowableComputable;
@@ -45,7 +45,7 @@ import static com.linrol.cn.tool.utils.StringUtils.isBlank;
 public class GitLabUtil {
 
     @Nullable
-    public static GitRepository getGitRepository(@NotNull Project project, @Nullable VirtualFile file) {
+    public static GitRepository getGitRepository(@NotNull Project project, @NotNull VirtualFile file) {
         GitRepositoryManager manager = GitUtil.getRepositoryManager(project);
         List<GitRepository> repositories = manager.getRepositories();
         if (repositories.size() == 0) {
@@ -54,13 +54,15 @@ public class GitLabUtil {
         if (repositories.size() == 1) {
             return repositories.get(0);
         }
-        if (file != null) {
-            GitRepository repository = manager.getRepositoryForFile(file);
-            if (repository != null) {
-                return repository;
-            }
+        GitRepository repository = manager.getRepositoryForFile(file);
+        if (repository != null) {
+            return repository;
         }
-        return manager.getRepositoryForFile(project.getBaseDir());
+        VirtualFile projectFile = ProjectRootManager.getInstance(project).getFileIndex().getContentRootForFile(file);;
+        if (projectFile == null) {
+            return null;
+        }
+        return manager.getRepositoryForFile(projectFile);
     }
 
     public static boolean isGitLabUrl(String testUrl, String url) {
@@ -100,7 +102,7 @@ public class GitLabUtil {
         GitLineHandler handler = new GitLineHandler(project, repository.getRoot(), GitCommand.REMOTE);
         handler.setSilent(true);
         handler.addParameters("add", remote, url);
-        Git git = ServiceManager.getService(Git.class);
+        Git git = project.getService(Git.class);
         GitCommandResult result = git.runCommand(handler);
         if (result.getExitCode() != 0) {
             // showErrorDialog(project, "New remote origin cannot be added to this project.", "Cannot Add New Remote");
