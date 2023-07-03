@@ -15,6 +15,8 @@ import git4idea.repo.GitRepository;
 import java.awt.*;
 import java.util.Arrays;
 
+import static com.linrol.cn.tool.utils.StringUtils.isBlank;
+
 public class GitCmd {
 
     Project project;
@@ -114,7 +116,12 @@ public class GitCmd {
         try {
             StringBuffer input = new StringBuffer();
             EventQueue.invokeAndWait(() -> {
-                input.append(Messages.showInputDialog(project, "Input commit message:", String.format("%s create branch merge request", project.getName()), Messages.getInformationIcon()));
+                String cm = Messages.showInputDialog(project, "Input commit message:", String.format("%s create branch merge request", project.getName()), Messages.getInformationIcon());
+                if (!isBlank(cm)) {
+                    if (!"null".equals(cm)) {
+                        input.append(cm);
+                    }
+                }
             });
             return input.toString();
         } catch (Exception e){
