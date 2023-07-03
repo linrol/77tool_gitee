@@ -99,7 +99,7 @@ public class MergeRequestAction extends AnAction {
     }
 
     private boolean needPush(GitCmd cmd, String branch) {
-        String logRet = cmd.build(GitCommand.LOG, branch, "^origin").run().getOutputAsJoinedString();
+        String logRet = cmd.build(GitCommand.LOG, branch, "^origin/" + branch).run().getOutputAsJoinedString();
         boolean need = !isBlank(logRet);
         if (!need) {
             String rootName = cmd.getRoot().getName();
@@ -113,18 +113,18 @@ public class MergeRequestAction extends AnAction {
         if (isBlank(title)) {
             return;
         }
-        cmd.build(GitCommand.ADD, ".").run();
+        // cmd.build(GitCommand.ADD, ".").run(); 不受git管理的文件不添加为git管理，所以注释此行代码
         cmd.build(GitCommand.COMMIT, "-m", title).run();
     }
 
     private String hasStash(GitCmd cmd) {
-        GitCommandResult ret = cmd.build(GitCommand.STATUS, "-s").run();
+        GitCommandResult ret = cmd.build(GitCommand.STATUS, "-s", "-uno").run(); //-uno排除不受git管理的文件
         if (isBlank(ret.getOutputAsJoinedString())) {
             return null;
         }
         String title = cmd.showInputDialog();
         if (isBlank(title)) {
-            cmd.log("您取消了操作");
+            cmd.log("您取消了代码提交操作");
             return null;
         }
         return title;
