@@ -56,7 +56,7 @@ public class MergeRequestAction extends AnAction {
             return;
         }
         VirtualFile root = psiElement.getVirtualFile();
-        // Git git = project.getService(Git.class);
+        // Git git = ServiceManager.getService(Git.class);
         GitRepository repository = GitLabUtil.getGitRepository(project, root);
         if (repository == null) {
             GitCmd.log(project, "你所选中的好像不是git工程目录，请重新选择");

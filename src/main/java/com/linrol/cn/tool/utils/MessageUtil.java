@@ -1,10 +1,5 @@
 package com.linrol.cn.tool.utils;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.VcsNotifier;
-
-import static git4idea.GitNotificationIdsHolder.MERGE_ERROR;
-
 /**
  * Notification utils
  *

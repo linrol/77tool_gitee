@@ -1,6 +1,7 @@
 package com.linrol.cn.tool.utils;
 
 import com.intellij.concurrency.JobScheduler;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -102,7 +103,7 @@ public class GitLabUtil {
         GitLineHandler handler = new GitLineHandler(project, repository.getRoot(), GitCommand.REMOTE);
         handler.setSilent(true);
         handler.addParameters("add", remote, url);
-        Git git = project.getService(Git.class);
+        Git git = ServiceManager.getService(Git.class);
         GitCommandResult result = git.runCommand(handler);
         if (result.getExitCode() != 0) {
             // showErrorDialog(project, "New remote origin cannot be added to this project.", "Cannot Add New Remote");
