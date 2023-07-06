@@ -52,20 +52,22 @@
         <toolWindow id="77tool" canCloseContents="false" anchor="bottom"
                     factoryClass="com.linrol.cn.tool.toolwindow.MslToolWindowFactory"/>
 
-        <vcs.changes.localCommitExecutor implementation="com.linrol.cn.tool.branch.mr.CommitMrExecutor"/>
+        <vcs.changes.localCommitExecutor implementation="com.linrol.cn.tool.branch.mr.GitCommitMrExecutor"/>
     </extensions>
     <actions>
         <group id="com.linrol.cn.tool.77toolGroup" text="77tool" popup="true">
-            <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="mr"/>
-            <!-- com.linrol.cn.tool.MergeRequest -->>
-            <action id="mr" class="com.linrol.cn.tool.branch.MergeRequestAction" text="Create Merge Request" description="Create merge request To current branch">
-            </action>
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="com.linrol.cn.tool.branch.mr.GitCommitMrAction"/>
         </group>
-        <action id="cmr" class="com.linrol.cn.tool.branch.mr.CommitMrAction" text="Commit And Merge Request" description="Commit And create merge request ">
+
+        <action id="com.linrol.cn.tool.branch.mr.GitCommitMrAction" class="com.linrol.cn.tool.branch.mr.GitCommitMrAction" text="Commit And Merge Request" description="Commit And create merge request ">
             <add-to-group group-id="com.linrol.cn.tool.77toolGroup" anchor="first"/>
         </action>
-<!--        <action id="checkout" class="com.linrol.cn.tool.branch.CheckOutAction" text="Checkout Branch" description="Checkout common branch and close git manage">-->
-<!--            <add-to-group group-id="com.linrol.cn.tool.77toolGroup" anchor="last"/>-->
-<!--        </action>-->
+
+<!--    <action id="mr" class="com.linrol.cn.tool.branch.mr.CommitMrActionxt="Create Merge Request" description="Create merge request To current branch">-->
+<!--        <add-to-group group-id="com.linrol.cn.tool.77toolGroup" anchor="first"/>-->
+<!--    </action>-->
+<!--    <action id="checkout" class="com.linrol.cn.tool.branch.CheckOutAction" text="Checkout Branch" description="Checkout common branch and close git manage">-->
+<!--        <add-to-group group-id="com.linrol.cn.tool.77toolGroup" anchor="last"/>-->
+<!--    </action>-->
     </actions>
 </idea-plugin>

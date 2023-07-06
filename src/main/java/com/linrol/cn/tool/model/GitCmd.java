@@ -12,8 +12,9 @@ import git4idea.commands.GitLineHandler;
 import com.linrol.cn.tool.toolwindow.ToolWindowConsole;
 import git4idea.repo.GitRepository;
 
-import java.awt.*;
+import java.awt.EventQueue;
 import java.util.Arrays;
+import java.util.List;
 
 import static com.linrol.cn.tool.utils.StringUtils.isBlank;
 
@@ -71,8 +72,12 @@ public class GitCmd {
     }
 
     public GitCmd build(GitCommand command, String... parameters) {
+        return build(command, Arrays.asList(parameters));
+    }
+
+    public GitCmd build(GitCommand command, List<String> parameters) {
         GitLineHandler handler = new GitLineHandler(getProject(), getRoot(), command);
-        Arrays.asList(parameters).forEach(handler::addParameters);
+        parameters.forEach(handler::addParameters);
         this.handler = handler;
         return this;
     }

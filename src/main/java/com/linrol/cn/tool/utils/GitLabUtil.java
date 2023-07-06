@@ -13,6 +13,7 @@ import com.intellij.openapi.util.ThrowableComputable;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.ThrowableConvertor;
 import com.intellij.util.containers.Convertor;
+import com.linrol.cn.tool.model.RepositoryVirtualFiles;
 import git4idea.GitUtil;
 import git4idea.commands.Git;
 import git4idea.commands.GitCommand;
@@ -22,6 +23,7 @@ import git4idea.config.GitExecutableManager;
 import git4idea.config.GitVersion;
 import git4idea.repo.GitRepository;
 import git4idea.repo.GitRepositoryManager;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,6 +66,18 @@ public class GitLabUtil {
             return null;
         }
         return manager.getRepositoryForFile(projectFile);
+    }
+
+    public static List<RepositoryVirtualFiles> groupByRepository(Project project, List<VirtualFile> files) {
+        GitRepositoryManager manager = GitUtil.getRepositoryManager(project);
+        return manager.getRepositories().stream().map(m -> {
+            String repoPath = m.getRoot().getPath();
+            List<VirtualFile> virtualFiles = files.stream().filter(f -> f.getPath().startsWith(repoPath)).collect(Collectors.toList());
+            RepositoryVirtualFiles repoVfs = new RepositoryVirtualFiles();
+            repoVfs.setRepository(m);
+            repoVfs.setVirtualFileList(virtualFiles);
+            return repoVfs;
+        }).filter(m -> !m.isEmptyFile()).collect(Collectors.toList());
     }
 
     public static boolean isGitLabUrl(String testUrl, String url) {
