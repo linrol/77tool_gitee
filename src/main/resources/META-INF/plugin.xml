@@ -12,6 +12,11 @@
 
     <change-notes><![CDATA[
 
+        <b>Version 1.0.5</b>
+        <ul>
+            <li>Integrate create merge request into git menu</li>
+        </ul>
+
         <b>Version 1.0.4</b>
         <ul>
             <li>Support Idea 173</li>
