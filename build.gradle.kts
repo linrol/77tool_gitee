@@ -7,6 +7,10 @@ group = "com.linrol.cn"
 version = "1.0.4"
 
 repositories {
+    //TODO change them according every develop requirements
+    maven { url=uri("https://www.jetbrains.com/intellij-repository/releases") }
+    //maven { url=uri("https://www.jetbrains.com/intellij-repository/snapshots") }
+    maven { url=uri("https://cache-redirector.jetbrains.com/intellij-dependencies") }
     mavenCentral()
 }
 
