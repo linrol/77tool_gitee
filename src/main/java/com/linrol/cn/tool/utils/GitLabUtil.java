@@ -21,8 +21,11 @@ import git4idea.commands.GitCommandResult;
 import git4idea.commands.GitLineHandler;
 import git4idea.config.GitExecutableManager;
 import git4idea.config.GitVersion;
+import git4idea.fetch.GitFetchResult;
+import git4idea.fetch.GitFetchSupport;
 import git4idea.repo.GitRepository;
 import git4idea.repo.GitRepositoryManager;
+
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -253,6 +256,10 @@ public class GitLabUtil {
     @Messages.YesNoResult
     public static boolean showYesNoDialog(@Nullable Project project, @NotNull String title, @NotNull String message) {
         return Messages.YES == Messages.showYesNoDialog(project, message, title, Messages.getQuestionIcon());
+    }
+    @NotNull
+    public static GitFetchResult featch(@NotNull Project project) {
+        return GitFetchSupport.fetchSupport(project).fetchAllRemotes(GitUtil.getRepositories(project));
     }
 
 }
