@@ -1,11 +1,13 @@
 package com.linrol.cn.tool.branch.mr;
 
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.NlsSafe;
 import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.changes.CommitSession;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.linrol.cn.tool.branch.command.GitCommand;
+import com.linrol.cn.tool.model.GitCmd;
 import com.linrol.cn.tool.utils.GitLabUtil;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,7 +18,9 @@ import java.util.Collection;
 
 public class GitCommitMrSession implements CommitSession {
 
-    private Project project;
+    private static final Logger logger = Logger.getInstance(GitCommitMrSession.class);
+
+    private final Project project;
 
     public GitCommitMrSession(Project project) {
         this.project = project;
@@ -29,11 +33,17 @@ public class GitCommitMrSession implements CommitSession {
 
     @Override
     public void execute(@NotNull Collection<Change> changes, @Nullable @NlsSafe String commitMessage) {
-        List<VirtualFile> vfs = changes.stream().map(Change::getVirtualFile).collect(Collectors.toList());
-        GitLabUtil.groupByRepository(project, vfs).forEach(repoVfs -> {
-            repoVfs.setCommitMessage(commitMessage);
-            GitCommand.createMergeRequest(project, repoVfs);
-        });
+        try {
+            List<VirtualFile> vfs = changes.stream().map(Change::getVirtualFile).collect(Collectors.toList());
+            GitLabUtil.groupByRepository(project, vfs).forEach(repoVfs -> {
+                repoVfs.setCommitMessage(commitMessage);
+                GitCommand.createMergeRequest(project, repoVfs);
+            });
+        }catch (Throwable e) {
+            e.printStackTrace();
+            logger.error("Git Commit execute failed", e);
+            GitCmd.log(project, e.getMessage());
+        }
     }
 
     /** private void commit(Collection<Change> changes) {

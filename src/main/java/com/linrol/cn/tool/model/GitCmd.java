@@ -1,5 +1,6 @@
 package com.linrol.cn.tool.model;
 
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -19,6 +20,8 @@ import java.util.List;
 import static com.linrol.cn.tool.utils.StringUtils.isBlank;
 
 public class GitCmd {
+
+    private static final Logger logger = Logger.getInstance(GitCmd.class);
 
     Project project;
 
@@ -90,9 +93,13 @@ public class GitCmd {
     }
 
     public GitCommandResult run() {
+        String runString = this.handler.printableCommandLine();
+        logger.debug(runString);
         GitCommandResult ret = Git.getInstance().runCommand(this.handler);
         if (!ret.success()) {
-            throw new RuntimeException(ret.getErrorOutputAsJoinedString());
+            String errorString = ret.getErrorOutputAsJoinedString();
+            logger.info(String.format("Git run command:%s failed case by:%s", runString, errorString));
+            throw new RuntimeException(errorString);
         }
         return ret;
     }
