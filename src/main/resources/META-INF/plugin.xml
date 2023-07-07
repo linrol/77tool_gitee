@@ -14,8 +14,9 @@
 
         <b>Version 1.0.5</b>
         <ul>
-            <li>Integrate create merge request into git menu</li>
-            <li>For create merge request set icon</li>
+            <li>Support only merge request into push dialog</li>
+            <li>Integrate commit and merge request into commit dialog</li>
+            <li>For commit and create merge request set icon</li>
         </ul>
 
         <b>Version 1.0.4</b>
