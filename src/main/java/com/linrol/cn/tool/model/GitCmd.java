@@ -1,5 +1,6 @@
 package com.linrol.cn.tool.model;
 
+import com.intellij.dvcs.repo.Repository;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
@@ -11,8 +12,8 @@ import git4idea.commands.GitCommand;
 import git4idea.commands.GitCommandResult;
 import git4idea.commands.GitLineHandler;
 import com.linrol.cn.tool.toolwindow.ToolWindowConsole;
-import git4idea.repo.GitRepository;
 
+import git4idea.repo.GitRepository;
 import java.awt.EventQueue;
 import java.util.Arrays;
 import java.util.List;
@@ -45,7 +46,7 @@ public class GitCmd {
         this.project = project;
     }
 
-    public GitRepository getRepository() {
+    public Repository getRepository() {
         return repository;
     }
 
@@ -104,6 +105,10 @@ public class GitCmd {
         return ret;
     }
 
+    public static void clear() {
+        ToolWindowConsole.clear();
+    }
+
     public void log(String msg) {
         log(project, msg);
     }
@@ -114,10 +119,11 @@ public class GitCmd {
             return;
         }
         try {
-            EventQueue.invokeAndWait(() -> toolWindow.activate(() -> {
+            toolWindow.activate(() -> {
                 ToolWindowConsole.show();
                 ToolWindowConsole.log(project, msg);
-            }));
+            });
+            // EventQueue.invokeAndWait(() -> );
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -140,5 +146,13 @@ public class GitCmd {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public String getRemoteUrl() {
+        return repository.getRemotes().stream().flatMap(m -> m.getPushUrls().stream()).filter(f -> !isBlank(f)).findAny().orElse(null);
+    }
+
+    public String getCurrentBranchName() {
+        return repository.getCurrentBranchName();
     }
 }

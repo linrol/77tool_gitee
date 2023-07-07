@@ -22,11 +22,12 @@ public class GitCommand {
     if (repository == null) {
       throw new RuntimeException("你所选中的好像不是git工程目录，请重新选择");
     }
+    GitCmd cmd = new GitCmd(project, repository);
     Collection<GitRemote> remotes = repository.getRemotes();
     if (CollectionUtils.isEmpty(remotes)) {
       throw new RuntimeException("远程仓库未找到不存在，请检查你的git remote配置");
     }
-    String url = repository.getRemotes().stream().flatMap(m -> m.getPushUrls().stream()).filter(f -> !isBlank(f)).findAny().orElse(null);
+    String url = cmd.getRemoteUrl();
     if (isBlank(url)) {
       throw new RuntimeException("远程仓库未找到不存在，请检查你的git remote配置");
     }
@@ -34,15 +35,17 @@ public class GitCommand {
     if (currentBranch == null) {
       throw new RuntimeException("本地仓库当前分支获取失败");
     }
-    String branch = currentBranch.getName();
+    String branch = cmd.getCurrentBranchName();
     if (isBlank(branch)) {
       throw new RuntimeException("本地仓库当前分支获取失败");
     }
-    return push(new GitCmd(project, repository), url, branch, files);
+    commit(cmd, files);
+    return push(cmd);
   }
 
-  private static GitCommandResult push(GitCmd cmd, String url, String branch, RepositoryVirtualFiles files) {
-    commit(cmd, files);
+  public static GitCommandResult push(GitCmd cmd) {
+    String branch = cmd.getCurrentBranchName();
+    String url = cmd.getRemoteUrl();
     if (!needPush(cmd, branch)) {
       return null;
     }

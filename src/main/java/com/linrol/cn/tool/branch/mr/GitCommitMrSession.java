@@ -34,12 +34,13 @@ public class GitCommitMrSession implements CommitSession {
     @Override
     public void execute(@NotNull Collection<Change> changes, @Nullable @NlsSafe String commitMessage) {
         try {
+            GitCmd.clear();
             List<VirtualFile> vfs = changes.stream().map(Change::getVirtualFile).collect(Collectors.toList());
             GitLabUtil.groupByRepository(project, vfs).forEach(repoVfs -> {
                 repoVfs.setCommitMessage(commitMessage);
                 GitCommand.createMergeRequest(project, repoVfs);
             });
-        }catch (Throwable e) {
+        } catch (Throwable e) {
             e.printStackTrace();
             logger.error("Git Commit execute failed", e);
             GitCmd.log(project, e.getMessage());

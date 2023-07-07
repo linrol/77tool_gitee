@@ -59,6 +59,8 @@
                     factoryClass="com.linrol.cn.tool.toolwindow.MslToolWindowFactory"/>
 
         <vcs.changes.localCommitExecutor implementation="com.linrol.cn.tool.branch.mr.GitCommitMrExecutor"/>
+
+        <!--<pushDialogActionsProvider implementation="com.linrol.cn.tool.branch.extension.MergeExtensionAction"/>-->
     </extensions>
     <actions>
         <group id="com.linrol.cn.tool.77toolGroup" text="77tool" popup="true">
@@ -69,11 +71,17 @@
                 text="Commit And Merge Request"
                 description="Commit And create merge request"
                 icon="CollaborationToolsIcons.PullRequestOpen">
-            <add-to-group group-id="com.linrol.cn.tool.77toolGroup" anchor="first"/>
+            <add-to-group group-id="com.linrol.cn.tool.77toolGroup" anchor="last"/>
             <add-to-group group-id="VcsNavBarToolbarActions" anchor="before" relative-to-action="Vcs.Push"/>
             <add-to-group group-id="Git.MainMenu" anchor="before" relative-to-action="Vcs.Push"/>
             <add-to-group group-id="GitRepositoryActions" anchor="before" relative-to-action="Vcs.Push"/>
 
+        </action>
+
+        <action id="com.linrol.cn.tool.branch.mr.GitMergeRequestAction" class="com.linrol.cn.tool.branch.mr.GitMergeRequestAction" text="Merge Request"
+          description="Create Merge request">
+            <add-to-group group-id="com.linrol.cn.tool.77toolGroup" anchor="before" relative-to-action="com.linrol.cn.tool.branch.mr.GitCommitMrAction"/>
+            <add-to-group group-id="Vcs.Push.Actions" anchor="after" relative-to-action="Vcs.Push.Force"/>
         </action>
 
 <!--    <action id="mr" class="com.linrol.cn.tool.branch.mr.CommitMrActionxt="Create Merge Request" description="Create merge request To current branch">-->
@@ -82,5 +90,6 @@
 <!--    <action id="checkout" class="com.linrol.cn.tool.branch.CheckOutAction" text="Checkout Branch" description="Checkout common branch and close git manage">-->
 <!--        <add-to-group group-id="com.linrol.cn.tool.77toolGroup" anchor="last"/>-->
 <!--    </action>-->
+
     </actions>
 </idea-plugin>
