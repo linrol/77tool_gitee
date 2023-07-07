@@ -1,9 +1,15 @@
 package com.linrol.cn.tool.model;
 
 import com.intellij.dvcs.repo.Repository;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.progress.ProcessCanceledException;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
@@ -14,6 +20,9 @@ import git4idea.commands.GitLineHandler;
 import com.linrol.cn.tool.toolwindow.ToolWindowConsole;
 
 import git4idea.repo.GitRepository;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.jetbrains.annotations.NotNull;
+
 import java.awt.EventQueue;
 import java.util.Arrays;
 import java.util.List;
@@ -94,15 +103,26 @@ public class GitCmd {
     }
 
     public GitCommandResult run() {
-        String runString = this.handler.printableCommandLine();
-        logger.debug(runString);
-        GitCommandResult ret = Git.getInstance().runCommand(this.handler);
-        if (!ret.success()) {
-            String errorString = ret.getErrorOutputAsJoinedString();
-            logger.info(String.format("Git run command:%s failed case by:%s", runString, errorString));
-            throw new RuntimeException(errorString);
+        try {
+            String runString = this.handler.printableCommandLine();
+            logger.debug(runString);
+            String title = String.format("Git %s running", "command");
+            GitCommandResult ret = ProgressManager.getInstance().run(new Task.WithResult<GitCommandResult, VcsException>(project, title, true) {
+                @Override
+                protected GitCommandResult compute(@NotNull ProgressIndicator indicator) {
+                    return Git.getInstance().runCommand(handler);
+                }
+            });
+            // GitCommandResult ret = Git.getInstance().runCommand(this.handler);
+            if (!ret.success()) {
+                String errorString = ret.getErrorOutputAsJoinedString();
+                logger.info(String.format("Git run command:%s failed case by:%s", runString, errorString));
+                throw new RuntimeException(errorString);
+            }
+            return ret;
+        } catch (VcsException | ProcessCanceledException e) {
+            throw new RuntimeException(ExceptionUtils.getRootCauseMessage(e));
         }
-        return ret;
     }
 
     public static void clear() {
@@ -119,9 +139,11 @@ public class GitCmd {
             return;
         }
         try {
-            toolWindow.activate(() -> {
-                ToolWindowConsole.show();
-                ToolWindowConsole.log(project, msg);
+            ApplicationManager.getApplication().invokeLater(() -> {
+                toolWindow.activate(() -> {
+                    ToolWindowConsole.show();
+                    ToolWindowConsole.log(project, msg);
+                });
             });
             // EventQueue.invokeAndWait(() -> );
         } catch (Exception e) {

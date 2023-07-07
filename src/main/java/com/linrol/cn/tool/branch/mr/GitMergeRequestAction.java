@@ -11,6 +11,7 @@ import com.intellij.openapi.project.Project;
 import com.linrol.cn.tool.branch.command.GitCommand;
 import com.linrol.cn.tool.model.GitCmd;
 import git4idea.repo.GitRepository;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,6 +37,7 @@ public class GitMergeRequestAction extends PushActionBase {
   @Override
   protected void actionPerformed(@NotNull Project project, @NotNull VcsPushUi dialog) {
     try {
+      GitCmd.clear();
       dialog.getSelectedPushSpecs().values().stream().flatMap(m -> {
         return m.stream().map(PushInfo::getRepository);
       }).forEach(repo -> {
@@ -43,16 +45,21 @@ public class GitMergeRequestAction extends PushActionBase {
         GitCmd cmd = new GitCmd(project, (GitRepository) repo);
         GitCommand.push(cmd);
       });
-    } catch (Exception e) {
+      close(dialog, OK_EXIT_CODE);
+    } catch (Throwable e) {
+      close(dialog, OK_EXIT_CODE);
       e.printStackTrace();
-      logger.error("Git Commit execute failed", e);
-      GitCmd.log(project, e.getMessage());
+      GitCmd.log(project, ExceptionUtils.getRootCauseMessage(e));
+      logger.error("GitMergeRequestAction execute failed", e);
     }
+
+  }
+
+  private void close(VcsPushUi dialog, int exitCode) {
     if (dialog instanceof VcsPushDialog) {
       // 关闭push窗口
       VcsPushDialog vcsPushDialog = (VcsPushDialog) dialog;
-      vcsPushDialog.close(OK_EXIT_CODE);
+      vcsPushDialog.close(exitCode);
     }
   }
-
 }

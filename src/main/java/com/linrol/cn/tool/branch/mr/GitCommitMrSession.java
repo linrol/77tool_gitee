@@ -5,16 +5,19 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.NlsSafe;
 import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.changes.CommitSession;
-import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vcs.checkin.CheckinEnvironment;
 import com.linrol.cn.tool.branch.command.GitCommand;
 import com.linrol.cn.tool.model.GitCmd;
 import com.linrol.cn.tool.utils.GitLabUtil;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import git4idea.GitVcs;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import java.util.Collection;
+
+import static com.linrol.cn.tool.utils.StringUtils.isBlank;
 
 public class GitCommitMrSession implements CommitSession {
 
@@ -35,15 +38,23 @@ public class GitCommitMrSession implements CommitSession {
     public void execute(@NotNull Collection<Change> changes, @Nullable @NlsSafe String commitMessage) {
         try {
             GitCmd.clear();
-            List<VirtualFile> vfs = changes.stream().map(Change::getVirtualFile).collect(Collectors.toList());
-            GitLabUtil.groupByRepository(project, vfs).forEach(repoVfs -> {
-                repoVfs.setCommitMessage(commitMessage);
-                GitCommand.createMergeRequest(project, repoVfs);
+            List<Change> changeList = new ArrayList<>(changes);
+            CheckinEnvironment checkinEnvironment = GitVcs.getInstance(project).getCheckinEnvironment();
+            if (checkinEnvironment == null) {
+                throw new RuntimeException("getCheckinEnvironment null");
+            }
+            if (commitMessage == null || isBlank(commitMessage)) {
+                throw new RuntimeException("请输入提交消息");
+            }
+            // GitLabUtil.groupByRepository(project, changeList);
+            checkinEnvironment.commit(changeList, commitMessage);
+            GitLabUtil.getRepositories(project, changeList).forEach(repo -> {
+                GitCommand.push(new GitCmd(project, repo));
             });
         } catch (Throwable e) {
             e.printStackTrace();
-            logger.error("Git Commit execute failed", e);
-            GitCmd.log(project, e.getMessage());
+            GitCmd.log(project, ExceptionUtils.getRootCauseMessage(e));
+            logger.error("GitCommitMrSession execute failed", e);
         }
     }
 

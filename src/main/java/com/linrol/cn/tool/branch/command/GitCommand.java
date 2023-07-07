@@ -4,21 +4,20 @@ import static com.linrol.cn.tool.utils.StringUtils.isBlank;
 import static com.linrol.cn.tool.utils.TimeUtils.getCurrentTime;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vcs.checkin.CheckinEnvironment;
 import com.linrol.cn.tool.model.GitCmd;
-import com.linrol.cn.tool.model.RepositoryVirtualFiles;
+import com.linrol.cn.tool.model.RepositoryChange;
 import git4idea.GitLocalBranch;
 import git4idea.commands.GitCommandResult;
 import git4idea.repo.GitRemote;
 import git4idea.repo.GitRepository;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 
 public class GitCommand {
 
-  public static GitCommandResult createMergeRequest(Project project, RepositoryVirtualFiles files) {
-    GitRepository repository = files.getRepository();
+  public static GitCommandResult createMergeRequest(Project project, RepositoryChange changes) {
+    GitRepository repository = changes.getRepository();
     if (repository == null) {
       throw new RuntimeException("你所选中的好像不是git工程目录，请重新选择");
     }
@@ -39,7 +38,7 @@ public class GitCommand {
     if (isBlank(branch)) {
       throw new RuntimeException("本地仓库当前分支获取失败");
     }
-    commit(cmd, files);
+    commit(changes);
     return push(cmd);
   }
 
@@ -71,17 +70,17 @@ public class GitCommand {
     return need;
   }
 
-  private static void commit(GitCmd cmd, RepositoryVirtualFiles files) {
+  private static void commit(RepositoryChange changes) {
     // String title = hasStash(cmd);
-    String title = files.getCommitMessage();
+    String title = changes.getCommitMessage();
     if (isBlank(title)) {
       return;
     }
-    // cmd.build(GitCommand.ADD, ".").run(); 不受git管理的文件不添加为git管理，所以注释此行代码
-    List<String> params = new ArrayList<>(files.getFilePaths());
-    params.add("-m");
-    params.add(title);
-    cmd.build(git4idea.commands.GitCommand.COMMIT, params).run();
+    CheckinEnvironment checkinEnvironment = changes.getRepository().getVcs().getCheckinEnvironment();
+    if (checkinEnvironment == null) {
+      throw new RuntimeException("getCheckinEnvironment null");
+    }
+    checkinEnvironment.commit(changes.getChangeFileList(), title);
   }
 
   private static String hasStash(GitCmd cmd) {

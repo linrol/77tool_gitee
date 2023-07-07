@@ -10,10 +10,11 @@ import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Ref;
 import com.intellij.openapi.util.ThrowableComputable;
+import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.ThrowableConvertor;
 import com.intellij.util.containers.Convertor;
-import com.linrol.cn.tool.model.RepositoryVirtualFiles;
+import com.linrol.cn.tool.model.RepositoryChange;
 import git4idea.GitUtil;
 import git4idea.commands.Git;
 import git4idea.commands.GitCommand;
@@ -26,6 +27,9 @@ import git4idea.fetch.GitFetchSupport;
 import git4idea.repo.GitRepository;
 import git4idea.repo.GitRepositoryManager;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -71,16 +75,36 @@ public class GitLabUtil {
         return manager.getRepositoryForFile(projectFile);
     }
 
-    public static List<RepositoryVirtualFiles> groupByRepository(Project project, List<VirtualFile> files) {
+    public static List<RepositoryChange> groupByRepository(Project project, List<Change> files) {
         GitRepositoryManager manager = GitUtil.getRepositoryManager(project);
-        return manager.getRepositories().stream().map(m -> {
-            String repoPath = m.getRoot().getPath();
-            List<VirtualFile> virtualFiles = files.stream().filter(f -> f.getPath().startsWith(repoPath)).collect(Collectors.toList());
-            RepositoryVirtualFiles repoVfs = new RepositoryVirtualFiles();
-            repoVfs.setRepository(m);
-            repoVfs.setVirtualFileList(virtualFiles);
-            return repoVfs;
-        }).filter(m -> !m.isEmptyFile()).collect(Collectors.toList());
+        Map<GitRepository, List<Change>> repoFilesMap = new HashMap<>();
+        files.forEach(change -> {
+            VirtualFile virtualFile = change.getVirtualFile();
+            if (virtualFile == null) {
+                return;
+            }
+            GitRepository repository = manager.getRepositoryForFile(virtualFile);
+            repoFilesMap.compute(repository, (k, v) -> {
+                if (v == null) {
+                    List<Change> list = new ArrayList<>();
+                    list.add(change);
+                    return list;
+                }
+                v.add(change);
+                return v;
+            });
+        });
+
+        return repoFilesMap.entrySet().stream().map(entry -> {
+            return RepositoryChange.of(entry.getKey(), entry.getValue());
+        }).collect(Collectors.toList());
+    }
+
+    public static List<GitRepository> getRepositories(Project project, List<Change> files) {
+        GitRepositoryManager manager = GitUtil.getRepositoryManager(project);
+        return files.stream().filter(f -> {
+            return f.getVirtualFile() != null;
+        }).map(m -> manager.getRepositoryForFile(m.getVirtualFile())).distinct().collect(Collectors.toList());
     }
 
     public static boolean isGitLabUrl(String testUrl, String url) {

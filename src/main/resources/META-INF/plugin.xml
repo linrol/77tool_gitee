@@ -72,7 +72,7 @@
                 description="Commit And create merge request"
                 icon="CollaborationToolsIcons.PullRequestOpen">
             <add-to-group group-id="com.linrol.cn.tool.77toolGroup" anchor="last"/>
-            <add-to-group group-id="VcsNavBarToolbarActions" anchor="before" relative-to-action="Vcs.Push"/>
+            <add-to-group group-id="VcsNavBarToolbarActions" anchor="before" relative-to-action="Vcs.ShowTabbedFileHistory" />
             <add-to-group group-id="Git.MainMenu" anchor="before" relative-to-action="Vcs.Push"/>
             <add-to-group group-id="GitRepositoryActions" anchor="before" relative-to-action="Vcs.Push"/>
 
