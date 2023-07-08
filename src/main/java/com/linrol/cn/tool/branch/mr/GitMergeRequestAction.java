@@ -38,15 +38,16 @@ public class GitMergeRequestAction extends PushActionBase {
   protected void actionPerformed(@NotNull Project project, @NotNull VcsPushUi dialog) {
     try {
       GitCmd.clear();
-      dialog.getSelectedPushSpecs().values().stream().flatMap(m -> {
-        return m.stream().map(PushInfo::getRepository);
-      }).forEach(repo -> {
+      dialog.getSelectedPushSpecs().values().stream().flatMap(m -> m.stream().map(PushInfo::getRepository)).forEach(repo -> {
         // 实现逻辑
         GitCmd cmd = new GitCmd(project, (GitRepository) repo);
         GitCommand.push(cmd);
       });
       close(dialog, OK_EXIT_CODE);
-    } catch (Throwable e) {
+    } catch (RuntimeException e) {
+      e.printStackTrace();
+      GitCmd.log(project, ExceptionUtils.getRootCauseMessage(e));
+    }  catch (Throwable e) {
       close(dialog, OK_EXIT_CODE);
       e.printStackTrace();
       GitCmd.log(project, ExceptionUtils.getRootCauseMessage(e));

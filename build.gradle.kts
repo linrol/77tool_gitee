@@ -23,6 +23,7 @@ intellij {
   type.set("IC") // Target IDE Platform
 
   plugins.set(listOf("Git4Idea"))
+  // plugins.set(listOf("org.jetbrains.intellij:v1.15.0"))
 }
 
 tasks {
@@ -37,8 +38,12 @@ tasks {
   }
 
   patchPluginXml {
-    sinceBuild.set("182")
+    sinceBuild.set("182.3")
     untilBuild.set("231.*")
+  }
+
+  runPluginVerifier {
+    ideVersions.set(listOf("IC-2018.3.6"))
   }
 
   signPlugin {

@@ -27,7 +27,7 @@ public class GitCommitMrExecutor extends LocalCommitExecutor {
 
     @Override
     public @Nullable @NonNls String getHelpId() {
-        return null;
+        return "Commit And Merge Request";
     }
 
     @Override

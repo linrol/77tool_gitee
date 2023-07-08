@@ -51,6 +51,9 @@ public class GitCommitMrSession implements CommitSession {
             GitLabUtil.getRepositories(project, changeList).forEach(repo -> {
                 GitCommand.push(new GitCmd(project, repo));
             });
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            GitCmd.log(project, ExceptionUtils.getRootCauseMessage(e));
         } catch (Throwable e) {
             e.printStackTrace();
             GitCmd.log(project, ExceptionUtils.getRootCauseMessage(e));
