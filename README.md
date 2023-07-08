@@ -25,8 +25,16 @@ Release 发布页面下载Latest版下载（version 1.0.5）
 
 # 更新日志
 <!-- Plugin description -->
+**Version 1.0.6**
+
+* **Frame structure adjustment****（**框架结构调整**）**
+* **Use stable API to implement code commit****（**使用更稳定的API实现代码提交**）**
+* **Supports Multi project common merge****（**支持多项目通用合并**）**
+
 **Version 1.0.5**
 
+* **Support only merge request into push dialog****（**支持仅创建MR到推送工具窗口中**）**
+* **Improve compatibility with new version IDEA****（**改进与新版本IDEA的兼容性**）**
 * **Integrate create merge request into git menu****（**集成功能到IDEA自带的提交变更工具窗口中**）**
 * **For create merge request set icon****（**为操作按钮添加图标**）**
 
@@ -43,9 +51,11 @@ Release 发布页面下载Latest版下载（version 1.0.5）
 
 # 使用截图（IDEA插件版）
 ![](src/main/resources/image/main_menu_mr.jpg)
+![](src/main/resources/image/77_menu.png)
 ![](src/main/resources/image/dialog_commit_mr.jpg)
 ![](src/main/resources/image/dialog_push_mr.png)
 ![](src/main/resources/image/console_reslult.png)
+![](src/main/resources/image/dialog_merge.png)
 # 使用截图（命令版）
 ![](src/main/resources/image/python_shell.png)
 
