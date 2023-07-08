@@ -42,10 +42,11 @@ Release 发布页面下载Latest版下载（version 1.0.5）
 <!-- Plugin description end -->
 
 # 使用截图（IDEA插件版）
-![](src/main/resources/image/git_menu.jpg)
-![](src/main/resources/image/git_toolwindow_menu.jpg)
-![](src/main/resources/image/git_reslult.png)
-# 命令版（IDEA插件版）
-![](src/main/resources/image/git_shell.png)
+![](src/main/resources/image/main_menu_mr.jpg)
+![](src/main/resources/image/dialog_commit_mr.jpg)
+![](src/main/resources/image/dialog_push_mr.png)
+![](src/main/resources/image/console_reslult.png)
+# 使用截图（命令版）
+![](src/main/resources/image/python_shell.png)
 
 
