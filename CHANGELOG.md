@@ -3,32 +3,33 @@
 
 # Changelogs
 
-## [Unreleased]
+## Unreleased
 
-## [1.0.6]
+## 1.0.6
 - Frame structure adjustment
 - Use stable API to implement code commit
 
-## [1.0.5]
+## 1.0.5
 - Support only merge request into push dialog
 - Integrate commit and merge request into commit dialog
 - Improve compatibility with new version IDEA
 - For commit and create merge request set icon
 
-## [1.0.4]
+## 1.0.4
 - Support Idea 182
 - Fix files that are not under Git version management and should not be submitted</b>
 - Fix the problem of not creating an empty MR after canceling the operation in the input submission information window
 - Fix the problem of not creating an empty MR when the current branch HEAD is consistent with the remote branch
 
-## [1.0.3]
+## 1.0.3
 - Support Idea for 191
 - Switch Git4Idea plugin call git
 
-## [1.0.2]
+## 1.0.2
 - Use shell script impl created merge request
 
-## [1.0.0]
+## 1.0.0
+
 ### Features
 - Quick Create Merge Request
 - Supports commit and create merge request
