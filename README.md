@@ -24,6 +24,7 @@ Release 发布页面下载Latest版下载（version 1.0.5）
 
 
 # 更新日志
+<!-- Plugin description -->
 **Version 1.0.5**
 
 * **Integrate create merge request into git menu****（**集成功能到IDEA自带的提交变更工具窗口中**）**
@@ -38,6 +39,7 @@ Release 发布页面下载Latest版下载（version 1.0.5）
 **Version 1.0.3**
 * **Support after Idea 191 after**
 * **switch Git4Idea plugin****invoke****git**
+<!-- Plugin description end -->
 
 # 使用截图（IDEA插件版）
 ![](src/main/resources/image/git_menu.jpg)
