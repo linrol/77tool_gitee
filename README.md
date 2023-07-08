@@ -17,7 +17,7 @@
 
 [Emm]本次除了插件版也支持二进制命令版，使用pip3 install 77tool安装命令包。
 
-Useag：77tool mr
+Usage：77tool mr
 
 # 下载
 Release 发布页面下载Latest版下载（version 1.0.5）
