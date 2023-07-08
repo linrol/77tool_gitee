@@ -13,6 +13,7 @@
         <b>1.0.6 Change Log:</b><br>
         <li>Frame structure adjustment</li>
         <li>Use stable API to implement code commit</li>
+        <li>Supports Multi project common merge</li>
         <br>
         <b>1.0.5 Change Log:</b><br>
         <li>Support only merge request into push dialog</li>
@@ -54,16 +55,16 @@
         <toolWindow id="77tool" canCloseContents="false" anchor="bottom"
                     factoryClass="org.intellij.tool.toolwindow.MslToolWindowFactory"/>
 
-        <vcs.changes.localCommitExecutor implementation="org.intellij.tool.branch.mr.GitCommitMrExecutor"/>
+        <vcs.changes.localCommitExecutor implementation="org.intellij.tool.branch.merge.request.GitCommitMrExecutor"/>
 
         <!--<pushDialogActionsProvider implementation="org.intellij.tool.branch.extension.MergeExtensionAction"/>-->
     </extensions>
     <actions>
         <group id="org.intellij.tool.77toolGroup" text="77tool" popup="true">
-            <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="org.intellij.tool.branch.mr.GitCommitMrAction"/>
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="org.intellij.tool.branch.merge.request.GitCommitMrAction"/>
         </group>
 
-        <action id="org.intellij.tool.branch.mr.GitCommitMrAction" class="org.intellij.tool.branch.mr.GitCommitMrAction"
+        <action id="org.intellij.tool.branch.merge.request.GitCommitMrAction" class="org.intellij.tool.branch.merge.request.GitCommitMrAction"
                 text="Commit And Merge Request"
                 description="Commit And create merge request"
                 icon="CollaborationToolsIcons.PullRequestOpen">
@@ -74,10 +75,17 @@
 
         </action>
 
-        <action id="org.intellij.tool.branch.mr.GitMergeRequestAction" class="org.intellij.tool.branch.mr.GitMergeRequestAction" text="Merge Request"
+        <action id="org.intellij.tool.branch.merge.request.GitMergeRequestAction" class="org.intellij.tool.branch.merge.request.GitMergeRequestAction" text="Merge Request"
                 description="Create Merge request">
-            <add-to-group group-id="org.intellij.tool.77toolGroup" anchor="before" relative-to-action="org.intellij.tool.branch.mr.GitCommitMrAction"/>
+            <add-to-group group-id="org.intellij.tool.77toolGroup" anchor="before" relative-to-action="org.intellij.tool.branch.merge.request.GitCommitMrAction"/>
             <add-to-group group-id="Vcs.Push.Actions" anchor="after" relative-to-action="Vcs.Push.Force"/>
+        </action>
+
+        <action id="org.intellij.tool.branch.merge.GitBranchMergeAction" class="org.intellij.tool.branch.merge.GitBranchMergeAction"
+                text="Merge For Common"
+                description="Multi project common merge">
+<!--                icon="ToolIcon.multiMerge"> -->
+            <add-to-group group-id="org.intellij.tool.77toolGroup" anchor="before" relative-to-action="org.intellij.tool.branch.merge.request.GitCommitMrAction"/>
         </action>
 
 <!--    <action id="mr" class="org.intellij.tool.branch.mr.CommitMrActionxt="Create Merge Request" description="Create merge request To current branch">-->

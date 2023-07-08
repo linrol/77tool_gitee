@@ -13,6 +13,7 @@ import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.ThrowableConvertor;
 import com.intellij.util.containers.Convertor;
+import git4idea.branch.GitBrancher;
 import org.intellij.tool.model.RepositoryChange;
 import git4idea.GitUtil;
 import git4idea.commands.Git;
@@ -26,16 +27,13 @@ import git4idea.fetch.GitFetchSupport;
 import git4idea.repo.GitRepository;
 import git4idea.repo.GitRepositoryManager;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -94,6 +92,20 @@ public class GitLabUtil {
 
         return repoFilesMap.entrySet().stream().map(entry -> {
             return RepositoryChange.of(entry.getKey(), entry.getValue());
+        }).collect(Collectors.toList());
+    }
+
+    public static List<GitRepository> getRepositories(Project project) {
+        GitRepositoryManager manager = GitUtil.getRepositoryManager(project);
+        return manager.getRepositories();
+    }
+
+    public static List<GitRepository> getRepositories(Project project, String... branch) {
+        return getRepositories(project).stream().filter(f -> {
+            List<String> remoteBranch = f.getBranches().getRemoteBranches().stream().map(b -> {
+                return b.getNameForRemoteOperations();
+            }).collect(Collectors.toList());
+            return new HashSet<>(remoteBranch).containsAll(Arrays.asList(branch));
         }).collect(Collectors.toList());
     }
 
@@ -282,5 +294,4 @@ public class GitLabUtil {
     public static GitFetchResult featch(@NotNull Project project) {
         return GitFetchSupport.fetchSupport(project).fetchAllRemotes(GitUtil.getRepositories(project));
     }
-
 }

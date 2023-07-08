@@ -1,4 +1,4 @@
-package org.intellij.tool.branch.mr;
+package org.intellij.tool.branch.merge.request;
 
 import static com.intellij.openapi.ui.DialogWrapper.OK_EXIT_CODE;
 

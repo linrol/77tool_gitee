@@ -1,4 +1,4 @@
-package org.intellij.tool.branch.mr;
+package org.intellij.tool.branch.merge.request;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
