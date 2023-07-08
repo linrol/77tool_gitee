@@ -10,56 +10,34 @@
     <description><![CDATA[ 77tool for branch. support branch quick created mr、delete local branch an more]]></description>
 
     <change-notes><![CDATA[
-    <b>2.3 Change Log:</b><br>
-    <li>Fix throw exception when select empty files</li>
-    <li>Disable the OK button when select empty files</li>
-    <br>
-    <b>2.2 Change Log:</b><br>
-    <li>List the select files in export setting dialog and can re-select them</li>
-    <li>Add copy to clipboard and show jar file in system explorer actions in notifications</li>
-    <br>
-    <b>2.1 Change Log:</b><br>
-    <li>fix NullPointException in 2021.1</li>
-    <br>
-    <b>2.0 Change Log:</b><br>
-    <li>change open api usage to be compatible with 2020.3 versions</li>
-    <br>
-    <b>1.5.1 Change Log:</b><br>
-	<li>change open api usage to be compatible with coming 2020 versions</li>
-	<br>
-    <b>1.5 Change Log:</b><br>
-	<li>supports export jar from local changes like create patch</li>
-	<li><b>add extent action in VCS menu, Version Control Local Changes pop menu and Commit Changes dialog commit button group</b></li>
-	<li>improve compatibility with new version IDEA</li>
-	<li><b>NOTES: export local changes not include un-version-control changes </b></li>
-	<br>
-	<b>1.4 Change Log:</b><br>
-	<li>add module dependencies in plugin.xml conform to Jetbrains plugin rule.</li>
-	<br>
-	<b>1.3 Change Log:</b><br>
-	<li>data collection announcement: <b>This plugin do not collect any personal data then transferring to outside.</b></li>
-	<li>bug fix: throw null point exception when inputted jar file not including parent path (i.e. would export to current working directory)</li>
-	<li>ui experience improve: e.g. pop dialog can be resize</li>
-	<br>
-	<b>1.2 Change Log:</b><br>
-	<li>switch json lib from jackson to gson (already included by platform dependencies)</li>
-	<li>list export jar history in combobox for select</li>
-	<br>
-	<b>1.1 Change Log:</b><br>
-	<li>fix throw IllegalArgumentException in earlier than version 2018.3</li>
-	<li>extend support version scope: compatible with 2017.3 and later</li>
-	<li>support community edition</li>
-	<li>add jackson external dependency</li>
-	<li>ui little improvement</li>
-	<br>
-    <b>1.0 Features:</b><br>
-    <li>Quick and Handy export</li>
-    <li>Supports export java, class, resource file in java project classpath and their compiled output directories</li>
-    <li>Supports single file or multi-files selection for export</li>
-    <li>Supports different scopes export: class, package, module, project</li>
-    <li>Supports cross modules export (no duplication selected)</li>
-    <li>Supports export files in test directory</li>
-    <li>Supports custom setting export file type</li>
+        <b>1.0.6 Change Log:</b><br>
+        <li>Frame structure adjustment</li>
+        <li>Use stable API to implement code commit</li>
+        <br>
+        <b>1.0.5 Change Log:</b><br>
+        <li>Support only merge request into push dialog</li>
+        <li>Integrate commit and merge request into commit dialog</li>
+        <li>Improve compatibility with new version IDEA</li>
+        <li>For commit and create merge request set icon</li>
+        <br>
+        <b>1.0.4 Change Log:</b><br>
+        <li>Support Idea 182</li>
+        <li>Fix files that are not under Git version management and should not be submitted</li>
+        <li>Fix the problem of not creating an empty MR after canceling the operation in the input submission information window</li>
+        <li>Fix the problem of not creating an empty MR when the current branch HEAD is consistent with the remote branch</li>
+        <br>
+        <b>1.0.3 Change Log:</b><br>
+        <li>Support Idea for 191</li>
+        <li>Switch Git4Idea plugin call git</li>
+        <br>
+        <b>1.0.2 Change Log:</b><br>
+        <li>Use shell script impl created merge request</li>
+        <br>
+        <b>1.0.0 Features:</b><br>
+        <li>Quick Create Merge Request</li>
+        <li>Supports commit and create merge request</li>
+        <li>Supports input commit message</li>
+        <li>Supports output merge request url</li>
     ]]>
     </change-notes>
 
