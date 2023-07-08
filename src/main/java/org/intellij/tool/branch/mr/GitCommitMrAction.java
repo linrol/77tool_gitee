@@ -1,4 +1,4 @@
-package com.linrol.cn.tool.branch.mr;
+package org.intellij.tool.branch.mr;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.changes.CommitExecutor;

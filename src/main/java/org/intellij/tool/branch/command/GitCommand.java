@@ -1,12 +1,11 @@
-package com.linrol.cn.tool.branch.command;
-
-import static com.linrol.cn.tool.utils.StringUtils.isBlank;
-import static com.linrol.cn.tool.utils.TimeUtils.getCurrentTime;
+package org.intellij.tool.branch.command;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.checkin.CheckinEnvironment;
-import com.linrol.cn.tool.model.GitCmd;
-import com.linrol.cn.tool.model.RepositoryChange;
+import org.intellij.tool.model.RepositoryChange;
+import org.intellij.tool.utils.StringUtils;
+import org.intellij.tool.utils.TimeUtils;
+import org.intellij.tool.model.GitCmd;
 import git4idea.GitLocalBranch;
 import git4idea.commands.GitCommandResult;
 import git4idea.repo.GitRemote;
@@ -27,7 +26,7 @@ public class GitCommand {
       throw new RuntimeException("远程仓库未找到不存在，请检查你的git remote配置");
     }
     String url = cmd.getRemoteUrl();
-    if (isBlank(url)) {
+    if (StringUtils.isBlank(url)) {
       throw new RuntimeException("远程仓库未找到不存在，请检查你的git remote配置");
     }
     GitLocalBranch currentBranch = repository.getCurrentBranch();
@@ -35,7 +34,7 @@ public class GitCommand {
       throw new RuntimeException("本地仓库当前分支获取失败");
     }
     String branch = cmd.getCurrentBranchName();
-    if (isBlank(branch)) {
+    if (StringUtils.isBlank(branch)) {
       throw new RuntimeException("本地仓库当前分支获取失败");
     }
     commit(changes);
@@ -48,7 +47,7 @@ public class GitCommand {
     if (!needPush(cmd, branch)) {
       return null;
     }
-    String tmpBranch = "77tool_mr_" + getCurrentTime("yyyyMMddHHmmss");
+    String tmpBranch = "77tool_mr_" + TimeUtils.getCurrentTime("yyyyMMddHHmmss");
     GitCommandResult ret = cmd.build(git4idea.commands.GitCommand.PUSH).config(false, false, url)
         .addParameters("origin")
         .addParameters(String.format("head:%s", tmpBranch))
@@ -62,7 +61,7 @@ public class GitCommand {
 
   private static boolean needPush(GitCmd cmd, String branch) {
     String logRet = cmd.build(git4idea.commands.GitCommand.LOG, branch, "^origin/" + branch).run().getOutputAsJoinedString();
-    boolean need = !isBlank(logRet);
+    boolean need = !StringUtils.isBlank(logRet);
     if (!need) {
       String rootName = cmd.getRoot().getName();
       cmd.log(String.format("工程【%s】分支【%s】没有需要push的代码!!!", rootName, branch));
@@ -73,7 +72,7 @@ public class GitCommand {
   private static void commit(RepositoryChange changes) {
     // String title = hasStash(cmd);
     String title = changes.getCommitMessage();
-    if (isBlank(title)) {
+    if (StringUtils.isBlank(title)) {
       return;
     }
     CheckinEnvironment checkinEnvironment = changes.getRepository().getVcs().getCheckinEnvironment();
@@ -85,11 +84,11 @@ public class GitCommand {
 
   private static String hasStash(GitCmd cmd) {
     GitCommandResult ret = cmd.build(git4idea.commands.GitCommand.STATUS, "-s", "-uno").run(); //-uno排除不受git管理的文件
-    if (isBlank(ret.getOutputAsJoinedString())) {
+    if (StringUtils.isBlank(ret.getOutputAsJoinedString())) {
       return null;
     }
     String title = cmd.showInputDialog();
-    if (isBlank(title)) {
+    if (StringUtils.isBlank(title)) {
       cmd.log("您取消了代码提交操作");
       return null;
     }

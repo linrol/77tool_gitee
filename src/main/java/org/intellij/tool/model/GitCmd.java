@@ -1,4 +1,4 @@
-package com.linrol.cn.tool.model;
+package org.intellij.tool.model;
 
 import com.intellij.dvcs.repo.Repository;
 import com.intellij.openapi.application.ApplicationManager;
@@ -17,7 +17,8 @@ import git4idea.commands.Git;
 import git4idea.commands.GitCommand;
 import git4idea.commands.GitCommandResult;
 import git4idea.commands.GitLineHandler;
-import com.linrol.cn.tool.toolwindow.ToolWindowConsole;
+import org.intellij.tool.toolwindow.ToolWindowConsole;
+import org.intellij.tool.utils.StringUtils;
 
 import git4idea.repo.GitRepository;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -26,8 +27,6 @@ import org.jetbrains.annotations.NotNull;
 import java.awt.EventQueue;
 import java.util.Arrays;
 import java.util.List;
-
-import static com.linrol.cn.tool.utils.StringUtils.isBlank;
 
 public class GitCmd {
 
@@ -157,7 +156,7 @@ public class GitCmd {
             StringBuffer input = new StringBuffer();
             EventQueue.invokeAndWait(() -> {
                 String cm = Messages.showInputDialog(project, "Input commit message:", String.format("%s create branch merge request", project.getName()), Messages.getInformationIcon());
-                if (!isBlank(cm)) {
+                if (!StringUtils.isBlank(cm)) {
                     if (!"null".equals(cm)) {
                         input.append(cm);
                     }
@@ -171,7 +170,7 @@ public class GitCmd {
     }
 
     public String getRemoteUrl() {
-        return repository.getRemotes().stream().flatMap(m -> m.getPushUrls().stream()).filter(f -> !isBlank(f)).findAny().orElse(null);
+        return repository.getRemotes().stream().flatMap(m -> m.getPushUrls().stream()).filter(f -> !StringUtils.isBlank(f)).findAny().orElse(null);
     }
 
     public String getCurrentBranchName() {

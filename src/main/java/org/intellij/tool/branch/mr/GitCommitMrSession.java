@@ -1,4 +1,4 @@
-package com.linrol.cn.tool.branch.mr;
+package org.intellij.tool.branch.mr;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
@@ -6,18 +6,19 @@ import com.intellij.openapi.util.NlsSafe;
 import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.changes.CommitSession;
 import com.intellij.openapi.vcs.checkin.CheckinEnvironment;
-import com.linrol.cn.tool.branch.command.GitCommand;
-import com.linrol.cn.tool.model.GitCmd;
-import com.linrol.cn.tool.utils.GitLabUtil;
+import org.intellij.tool.branch.command.GitCommand;
+import org.intellij.tool.model.GitCmd;
+import org.intellij.tool.utils.GitLabUtil;
+import org.intellij.tool.utils.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 import git4idea.GitVcs;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import java.util.Collection;
 
-import static com.linrol.cn.tool.utils.StringUtils.isBlank;
+import java.util.Collection;
 
 public class GitCommitMrSession implements CommitSession {
 
@@ -43,7 +44,7 @@ public class GitCommitMrSession implements CommitSession {
             if (checkinEnvironment == null) {
                 throw new RuntimeException("getCheckinEnvironment null");
             }
-            if (commitMessage == null || isBlank(commitMessage)) {
+            if (commitMessage == null || StringUtils.isBlank(commitMessage)) {
                 throw new RuntimeException("请输入提交消息");
             }
             // GitLabUtil.groupByRepository(project, changeList);

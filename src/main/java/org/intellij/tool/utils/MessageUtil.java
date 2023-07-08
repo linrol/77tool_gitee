@@ -1,4 +1,4 @@
-package com.linrol.cn.tool.utils;
+package org.intellij.tool.utils;
 
 /**
  * Notification utils

@@ -1,4 +1,4 @@
-package com.linrol.cn.tool.toolwindow;
+package org.intellij.tool.toolwindow;
 import com.intellij.execution.filters.TextConsoleBuilder;
 import com.intellij.execution.filters.TextConsoleBuilderFactory;
 import com.intellij.execution.ui.ConsoleView;

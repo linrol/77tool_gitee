@@ -1,4 +1,4 @@
-package com.linrol.cn.tool.branch.mr;
+package org.intellij.tool.branch.mr;
 
 import static com.intellij.openapi.ui.DialogWrapper.OK_EXIT_CODE;
 
@@ -8,8 +8,8 @@ import com.intellij.dvcs.push.ui.VcsPushDialog;
 import com.intellij.dvcs.push.ui.VcsPushUi;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
-import com.linrol.cn.tool.branch.command.GitCommand;
-import com.linrol.cn.tool.model.GitCmd;
+import org.intellij.tool.branch.command.GitCommand;
+import org.intellij.tool.model.GitCmd;
 import git4idea.repo.GitRepository;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.Nls;

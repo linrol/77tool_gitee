@@ -1,7 +1,7 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
     <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
-    <id>com.linrol.tool</id>
+    <id>org.intellij.77tool</id>
     <name>77tool</name>
     <version>1.0.6</version>
     <vendor email="linrol@gmail.com" url="https://github.com/linrol/77tool">LuoLin</vendor>
@@ -74,39 +74,39 @@
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
         <toolWindow id="77tool" canCloseContents="false" anchor="bottom"
-                    factoryClass="com.linrol.cn.tool.toolwindow.MslToolWindowFactory"/>
+                    factoryClass="org.intellij.tool.toolwindow.MslToolWindowFactory"/>
 
-        <vcs.changes.localCommitExecutor implementation="com.linrol.cn.tool.branch.mr.GitCommitMrExecutor"/>
+        <vcs.changes.localCommitExecutor implementation="org.intellij.tool.branch.mr.GitCommitMrExecutor"/>
 
-        <!--<pushDialogActionsProvider implementation="com.linrol.cn.tool.branch.extension.MergeExtensionAction"/>-->
+        <!--<pushDialogActionsProvider implementation="org.intellij.tool.branch.extension.MergeExtensionAction"/>-->
     </extensions>
     <actions>
-        <group id="com.linrol.cn.tool.77toolGroup" text="77tool" popup="true">
-            <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="com.linrol.cn.tool.branch.mr.GitCommitMrAction"/>
+        <group id="org.intellij.tool.77toolGroup" text="77tool" popup="true">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="org.intellij.tool.branch.mr.GitCommitMrAction"/>
         </group>
 
-        <action id="com.linrol.cn.tool.branch.mr.GitCommitMrAction" class="com.linrol.cn.tool.branch.mr.GitCommitMrAction"
+        <action id="org.intellij.tool.branch.mr.GitCommitMrAction" class="org.intellij.tool.branch.mr.GitCommitMrAction"
                 text="Commit And Merge Request"
                 description="Commit And create merge request"
                 icon="CollaborationToolsIcons.PullRequestOpen">
-            <add-to-group group-id="com.linrol.cn.tool.77toolGroup" anchor="last"/>
+            <add-to-group group-id="org.intellij.tool.77toolGroup" anchor="last"/>
             <add-to-group group-id="VcsNavBarToolbarActions" anchor="before" relative-to-action="Vcs.ShowTabbedFileHistory" />
             <add-to-group group-id="Git.MainMenu" anchor="before" relative-to-action="Vcs.Push"/>
             <add-to-group group-id="GitRepositoryActions" anchor="before" relative-to-action="Vcs.Push"/>
 
         </action>
 
-        <action id="com.linrol.cn.tool.branch.mr.GitMergeRequestAction" class="com.linrol.cn.tool.branch.mr.GitMergeRequestAction" text="Merge Request"
-          description="Create Merge request">
-            <add-to-group group-id="com.linrol.cn.tool.77toolGroup" anchor="before" relative-to-action="com.linrol.cn.tool.branch.mr.GitCommitMrAction"/>
+        <action id="org.intellij.tool.branch.mr.GitMergeRequestAction" class="org.intellij.tool.branch.mr.GitMergeRequestAction" text="Merge Request"
+                description="Create Merge request">
+            <add-to-group group-id="org.intellij.tool.77toolGroup" anchor="before" relative-to-action="org.intellij.tool.branch.mr.GitCommitMrAction"/>
             <add-to-group group-id="Vcs.Push.Actions" anchor="after" relative-to-action="Vcs.Push.Force"/>
         </action>
 
-<!--    <action id="mr" class="com.linrol.cn.tool.branch.mr.CommitMrActionxt="Create Merge Request" description="Create merge request To current branch">-->
-<!--        <add-to-group group-id="com.linrol.cn.tool.77toolGroup" anchor="first"/>-->
+<!--    <action id="mr" class="org.intellij.tool.branch.mr.CommitMrActionxt="Create Merge Request" description="Create merge request To current branch">-->
+<!--        <add-to-group group-id="org.intellij.tool.77toolGroup" anchor="first"/>-->
 <!--    </action>-->
-<!--    <action id="checkout" class="com.linrol.cn.tool.branch.CheckOutAction" text="Checkout Branch" description="Checkout common branch and close git manage">-->
-<!--        <add-to-group group-id="com.linrol.cn.tool.77toolGroup" anchor="last"/>-->
+<!--    <action id="checkout" class="org.intellij.tool.branch.CheckOutAction" text="Checkout Branch" description="Checkout common branch and close git manage">-->
+<!--        <add-to-group group-id="org.intellij.tool.77toolGroup" anchor="last"/>-->
 <!--    </action>-->
 
     </actions>

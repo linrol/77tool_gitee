@@ -1,4 +1,4 @@
-package com.linrol.cn.tool.model;
+package org.intellij.tool.model;
 
 import com.intellij.openapi.vcs.changes.Change;
 import git4idea.repo.GitRepository;

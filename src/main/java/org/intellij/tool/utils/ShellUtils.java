@@ -1,4 +1,4 @@
-package com.linrol.cn.tool.utils;
+package org.intellij.tool.utils;
 
 import java.io.*;
 import java.util.concurrent.Callable;

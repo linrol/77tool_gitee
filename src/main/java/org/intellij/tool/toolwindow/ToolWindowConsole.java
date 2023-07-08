@@ -1,11 +1,11 @@
-package com.linrol.cn.tool.toolwindow;
+package org.intellij.tool.toolwindow;
 import com.intellij.execution.filters.TextConsoleBuilderFactory;
 import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 
-import static com.linrol.cn.tool.utils.TimeUtils.getCurrentTime;
+import static org.intellij.tool.utils.TimeUtils.getCurrentTime;
 
 
 public class ToolWindowConsole {

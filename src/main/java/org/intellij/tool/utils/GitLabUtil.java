@@ -1,7 +1,6 @@
-package com.linrol.cn.tool.utils;
+package org.intellij.tool.utils;
 
 import com.intellij.concurrency.JobScheduler;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -14,7 +13,7 @@ import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.ThrowableConvertor;
 import com.intellij.util.containers.Convertor;
-import com.linrol.cn.tool.model.RepositoryChange;
+import org.intellij.tool.model.RepositoryChange;
 import git4idea.GitUtil;
 import git4idea.commands.Git;
 import git4idea.commands.GitCommand;
@@ -42,8 +41,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-// import static com.linrol.cn.tool.utils.MessageUtil.showErrorDialog;
-import static com.linrol.cn.tool.utils.StringUtils.isBlank;
 
 /**
  * GitLab specific untils
@@ -119,9 +116,9 @@ public class GitLabUtil {
             if (matcher.matches()) {
                 String group3 = matcher.group(3);
                 String group7 = matcher.group(7);
-                if (isBlank(group3)) {
+                if (StringUtils.isBlank(group3)) {
                     fromUrlHost = group3;
-                } else if (!isBlank(group7)) {
+                } else if (!StringUtils.isBlank(group7)) {
                     fromUrlHost = group7;
                 }
             }
