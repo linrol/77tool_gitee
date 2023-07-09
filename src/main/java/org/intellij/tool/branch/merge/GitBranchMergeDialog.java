@@ -116,7 +116,7 @@ public class GitBranchMergeDialog extends JDialog {
         List<String> list = repos.stream().map(p -> {
             return p.getRoot().getName();
         }).distinct().collect(Collectors.toList());
-        list.add(0, "共有分支所有工程");
+        list.add(0, "共有分支工程集合");
         return list;
     }
 
@@ -135,7 +135,7 @@ public class GitBranchMergeDialog extends JDialog {
             String targetBranch = target.getEditor().getItem().toString();
             String moduleName = module.getEditor().getItem().toString();
             List<GitRepository> repositories = GitLabUtil.getCommonRepositories(project, sourceBranch, targetBranch).stream().filter(repo -> {
-                if (moduleName.equals("共有分支所有工程")) {
+                if (moduleName.equals("共有分支工程集合")) {
                     return true;
                 }
                 return moduleName.equals(repo.getRoot().getName());
