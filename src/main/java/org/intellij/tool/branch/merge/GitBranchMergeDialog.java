@@ -177,6 +177,9 @@ public class GitBranchMergeDialog extends JDialog {
         if (isBlank(targetBranch)) {
             throw new RuntimeException("目标分支必填");
         }
+        if (sourceBranch.equals(targetBranch)) {
+            throw new RuntimeException("来源分支和目标分支不允许相同");
+        }
         if (isBlank(moduleName)) {
             throw new RuntimeException("工程模块必填");
         }
