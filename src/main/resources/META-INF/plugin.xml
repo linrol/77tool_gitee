@@ -83,7 +83,7 @@
 
         <action id="org.intellij.tool.branch.merge.GitBranchMergeAction" class="org.intellij.tool.branch.merge.GitBranchMergeAction"
                 text="Merge For Common"
-                description="Multi project common merge">
+                description="Multi project common merge"  icon="/icons/multi-merge.svg">
 <!--                icon="ToolIcon.multiMerge"> -->
             <add-to-group group-id="org.intellij.tool.77toolGroup" anchor="before" relative-to-action="org.intellij.tool.branch.merge.request.GitCommitMrAction"/>
         </action>
