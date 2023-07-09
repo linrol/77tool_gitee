@@ -1,24 +1,36 @@
 package org.intellij.tool.branch.merge;
 
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
+import git4idea.GitLocalBranch;
+import git4idea.GitReference;
 import git4idea.GitRemoteBranch;
 import git4idea.branch.GitBrancher;
 import git4idea.repo.GitRepository;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.intellij.tool.model.GitCmd;
 import org.intellij.tool.swing.AutoCompletion;
 import org.intellij.tool.utils.GitLabUtil;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.event.*;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.intellij.tool.utils.StringUtils.isBlank;
+
 public class GitBranchMergeDialog extends JDialog {
+
+    private static final Logger logger = Logger.getInstance(GitBranchMergeDialog.class);
+
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
 
     private Project project;
+
+    private Map<String, String> branchMap;
 
     // 来源分支
     private JComboBox<String> source;
@@ -33,12 +45,20 @@ public class GitBranchMergeDialog extends JDialog {
         this.project = project;
     }
 
-    public void sourceBindData(List<String> sourceBranchList) {
-        sourceBranchList.forEach(name -> source.addItem(name));
+    public Map<String, String> getBranchMap() {
+        return branchMap;
     }
 
-    public void targetBindData(List<String> targetBranchList) {
-        targetBranchList.forEach(name -> target.addItem(name));
+    public void setBranchMap(Map<String, String> branchMap) {
+        this.branchMap = branchMap;
+    }
+
+    public void branchBindData(Map<String, String> branchMap) {
+        this.setBranchMap(branchMap);
+        getBranchMap().keySet().forEach(name -> {
+            source.addItem(name);
+            target.addItem(name);
+        });
     }
 
     public void moduleBindData(List<String> modules) {
@@ -72,23 +92,18 @@ public class GitBranchMergeDialog extends JDialog {
     public static void build(Project project) {
         GitBranchMergeDialog dialog = new GitBranchMergeDialog(project);
         List<GitRepository> repos = GitLabUtil.getRepositories(project);
-        dialog.sourceBindData(getSourceBranchList(repos));
-        dialog.targetBindData(getTargetBranchList(repos));
+        dialog.branchBindData(getBranchList(repos));
         dialog.moduleBindData(getModuleList(repos));
         dialog.pack();
         dialog.setVisible(true);
     }
 
-    public static List<String> getSourceBranchList(List<GitRepository> repos) {
+    public static Map<String, String> getBranchList(List<GitRepository> repos) {
         return repos.stream().flatMap(p -> {
             return p.getBranches().getRemoteBranches().stream();
-        }).map(GitRemoteBranch::getNameForRemoteOperations).distinct().collect(Collectors.toList());
-    }
-
-    public static List<String> getTargetBranchList(List<GitRepository> repos) {
-        return repos.stream().flatMap(p -> {
-            return p.getBranches().getRemoteBranches().stream();
-        }).map(GitRemoteBranch::getNameForRemoteOperations).distinct().collect(Collectors.toList());
+        }).distinct().filter(f -> {
+            return !isBlank(f.getName()) && !isBlank(f.getNameForRemoteOperations());
+        }).collect(Collectors.toMap(GitRemoteBranch::getNameForRemoteOperations, GitReference::getName, (b1, b2) -> b1));
     }
 
     public static List<String> getModuleList(List<GitRepository> repos) {
@@ -100,7 +115,7 @@ public class GitBranchMergeDialog extends JDialog {
     }
 
     private void onOK() {
-        merge();
+        commonMerge();
         dispose();
     }
 
@@ -108,14 +123,61 @@ public class GitBranchMergeDialog extends JDialog {
         dispose();
     }
 
-    public void merge() {
-        GitBrancher brancher = GitBrancher.getInstance(project);
-        String sourceBranch = source.getEditor().getItem().toString();
-        String targetBranch = target.getEditor().getItem().toString();
-        List<GitRepository> repositories = GitLabUtil.getRepositories(project, sourceBranch, targetBranch);
-        brancher.checkout(targetBranch, false, repositories, () -> {
-            brancher.merge(sourceBranch, GitBrancher.DeleteOnMergeOption.NOTHING, repositories);
-        });
+    public void commonMerge() {
+        try {
+            String sourceBranch = source.getEditor().getItem().toString();
+            String targetBranch = target.getEditor().getItem().toString();
+            String moduleName = module.getEditor().getItem().toString();
+            List<GitRepository> repositories = GitLabUtil.getRepositories(project, sourceBranch, targetBranch).stream().filter(repo -> {
+                if (moduleName.equals("共有分支所有工程")) {
+                    return true;
+                }
+                return moduleName.equals(repo.getRoot().getName());
+            }).collect(Collectors.toList());
+            checkParams(sourceBranch, targetBranch, moduleName, repositories);
+
+            GitBrancher brancher = GitBrancher.getInstance(project);
+            Runnable callInAwtLater = () -> {
+                boolean checkoutRet = assertRepoBranch(repositories, targetBranch);
+                if (checkoutRet) {
+                    brancher.merge(getBranchMap().get(sourceBranch), GitBrancher.DeleteOnMergeOption.NOTHING, repositories);
+                }
+            };
+            brancher.checkout(targetBranch, false, repositories, callInAwtLater);
+        } catch (RuntimeException e) {
+            GitCmd.log(project, e.getMessage());
+        } catch (Throwable e) {
+            e.printStackTrace();
+            GitCmd.log(project, ExceptionUtils.getRootCauseMessage(e));
+            logger.error("GitMergeRequestAction execute failed", e);
+        }
     }
 
+
+    public boolean assertRepoBranch(List<GitRepository> repositories, String branchName) {
+        return repositories.stream().map(repo -> {
+            GitLocalBranch branch = repo.getCurrentBranch();
+            boolean ret = branch != null && branch.getName().equals(branchName);
+            if (!ret) {
+                String module = repo.getRoot().getName();
+                GitCmd.log(project, String.format("工程【%s】切换分支到【%s】失败，终止合并！！！", module, branchName));
+            }
+            return ret;
+        }).reduce((r1, r2) -> r1 && r2).orElse(false);
+    }
+
+    private void checkParams(String sourceBranch, String targetBranch, String moduleName, List<GitRepository> repositories) {
+        if (isBlank(sourceBranch)) {
+            throw new RuntimeException("来源分支必填");
+        }
+        if (isBlank(targetBranch)) {
+            throw new RuntimeException("目标分支必填");
+        }
+        if (isBlank(moduleName)) {
+            throw new RuntimeException("工程模块必填");
+        }
+        if (repositories.size() < 1) {
+            throw new RuntimeException(String.format("根据来源【%s】和目标【%s】分支未找到交集的工程，终止合并！！！", sourceBranch, targetBranch));
+        }
+    }
 }

@@ -291,7 +291,12 @@ public class GitLabUtil {
         return Messages.YES == Messages.showYesNoDialog(project, message, title, Messages.getQuestionIcon());
     }
     @NotNull
-    public static GitFetchResult featch(@NotNull Project project) {
-        return GitFetchSupport.fetchSupport(project).fetchAllRemotes(GitUtil.getRepositories(project));
+    public static GitFetchResult fetch(@NotNull Project project) {
+        return fetch(project, GitUtil.getRepositories(project));
+    }
+
+    @NotNull
+    public static GitFetchResult fetch(@NotNull Project project, Collection<GitRepository> repositories) {
+        return GitFetchSupport.fetchSupport(project).fetchAllRemotes(repositories);
     }
 }
