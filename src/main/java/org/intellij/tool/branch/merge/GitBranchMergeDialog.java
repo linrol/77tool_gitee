@@ -6,6 +6,8 @@ import git4idea.GitLocalBranch;
 import git4idea.GitReference;
 import git4idea.GitRemoteBranch;
 import git4idea.branch.GitBrancher;
+import git4idea.commands.GitCommand;
+import git4idea.commands.GitCommandResult;
 import git4idea.repo.GitRepository;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.intellij.tool.model.GitCmd;
@@ -14,8 +16,7 @@ import org.intellij.tool.utils.GitLabUtil;
 
 import javax.swing.*;
 import java.awt.event.*;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.intellij.tool.utils.StringUtils.isBlank;
@@ -55,8 +56,13 @@ public class GitBranchMergeDialog extends JDialog {
 
     public void branchBindData(Map<String, String> branchMap) {
         this.setBranchMap(branchMap);
-        getBranchMap().keySet().forEach(name -> {
+        List<String> branchList = new ArrayList<>(getBranchMap().keySet());
+        branchList.sort(Comparator.comparing(this::getSourceBranchWeight));
+        branchList.forEach(name -> {
             source.addItem(name);
+        });
+        branchList.sort(Comparator.comparing(this::getTargetBranchWeight));
+        branchList.forEach(name -> {
             target.addItem(name);
         });
     }
@@ -124,11 +130,11 @@ public class GitBranchMergeDialog extends JDialog {
     }
 
     public void commonMerge() {
-        try {
+        withExceptionRun(() -> {
             String sourceBranch = source.getEditor().getItem().toString();
             String targetBranch = target.getEditor().getItem().toString();
             String moduleName = module.getEditor().getItem().toString();
-            List<GitRepository> repositories = GitLabUtil.getRepositories(project, sourceBranch, targetBranch).stream().filter(repo -> {
+            List<GitRepository> repositories = GitLabUtil.getCommonRepositories(project, sourceBranch, targetBranch).stream().filter(repo -> {
                 if (moduleName.equals("共有分支所有工程")) {
                     return true;
                 }
@@ -138,19 +144,17 @@ public class GitBranchMergeDialog extends JDialog {
 
             GitBrancher brancher = GitBrancher.getInstance(project);
             Runnable callInAwtLater = () -> {
-                boolean checkoutRet = assertRepoBranch(repositories, targetBranch);
-                if (checkoutRet) {
-                    brancher.merge(getBranchMap().get(sourceBranch), GitBrancher.DeleteOnMergeOption.NOTHING, repositories);
-                }
+                withExceptionRun(() -> {
+                    boolean checkoutRet = assertRepoBranch(repositories, targetBranch);
+                    if (checkoutRet) {
+                        if (pull(repositories)) {
+                            brancher.merge(getBranchMap().get(sourceBranch), GitBrancher.DeleteOnMergeOption.NOTHING, repositories);
+                        }
+                    }
+                });
             };
             brancher.checkout(targetBranch, false, repositories, callInAwtLater);
-        } catch (RuntimeException e) {
-            GitCmd.log(project, e.getMessage());
-        } catch (Throwable e) {
-            e.printStackTrace();
-            GitCmd.log(project, ExceptionUtils.getRootCauseMessage(e));
-            logger.error("GitMergeRequestAction execute failed", e);
-        }
+        });
     }
 
 
@@ -178,6 +182,67 @@ public class GitBranchMergeDialog extends JDialog {
         }
         if (repositories.size() < 1) {
             throw new RuntimeException(String.format("根据来源【%s】和目标【%s】分支未找到交集的工程，终止合并！！！", sourceBranch, targetBranch));
+        }
+    }
+
+    private boolean pull(List<GitRepository> repositories) {
+        return repositories.stream().map(repo -> {
+            GitCmd cmd = new GitCmd(project, repo);
+            GitCommandResult result = cmd.build(GitCommand.PULL).run();
+            return result.success();
+        }).reduce((r1, r2) -> r1 && r2).orElse(false);
+    }
+
+    public Integer getSourceBranchWeight(String branch) {
+        if (branch.equals("stage")) {
+            return 0;
+        }
+        if (branch.equals("master")) {
+            return 1;
+        }
+        if (branch.startsWith("sprint") || branch.startsWith("release")) {
+            String date = branch.replace("sprint", "").replace("release", "");
+            if (date.length() == 8) {
+                return 2;
+            }
+        }
+        if (branch.startsWith("feature")) {
+            return 3;
+        }
+        if (branch.startsWith("stage-patch") || branch.startsWith("emergency")) {
+            return 4;
+        }
+        return 5;
+    }
+
+    public Integer getTargetBranchWeight(String branch) {
+        if (branch.startsWith("feature")) {
+            return 0;
+        }
+        if (branch.startsWith("sprint") || branch.startsWith("release")) {
+            String date = branch.replace("sprint", "").replace("release", "");
+            if (date.length() == 8) {
+                return 1;
+            }
+        }
+        if (branch.equals("stage") || branch.equals("master")) {
+            return 2;
+        }
+        if (branch.startsWith("stage-patch") || branch.startsWith("emergency")) {
+            return 3;
+        }
+        return 4;
+    }
+
+    public void withExceptionRun(Runnable runnable) {
+        try {
+            runnable.run();
+        } catch (RuntimeException e) {
+            GitCmd.log(project, ExceptionUtils.getRootCauseMessage(e));
+        } catch (Throwable e) {
+            e.printStackTrace();
+            GitCmd.log(project, ExceptionUtils.getRootCauseMessage(e));
+            logger.error("GitMergeRequestAction execute failed", e);
         }
     }
 }

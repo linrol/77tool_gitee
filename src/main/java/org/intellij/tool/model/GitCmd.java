@@ -13,10 +13,7 @@ import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
-import git4idea.commands.Git;
-import git4idea.commands.GitCommand;
-import git4idea.commands.GitCommandResult;
-import git4idea.commands.GitLineHandler;
+import git4idea.commands.*;
 import org.intellij.tool.toolwindow.ToolWindowConsole;
 import org.intellij.tool.utils.StringUtils;
 
@@ -39,6 +36,8 @@ public class GitCmd {
     VirtualFile root;
 
     GitLineHandler handler;
+
+    GitCommand command;
 
     public GitCmd(Project project, GitRepository repository) {
         this.repository = repository;
@@ -84,10 +83,12 @@ public class GitCmd {
     }
 
     public GitCmd build(GitCommand command, String... parameters) {
+        this.command = command;
         return build(command, Arrays.asList(parameters));
     }
 
     public GitCmd build(GitCommand command, List<String> parameters) {
+        this.command = command;
         GitLineHandler handler = new GitLineHandler(getProject(), getRoot(), command);
         parameters.forEach(handler::addParameters);
         this.handler = handler;
@@ -105,7 +106,7 @@ public class GitCmd {
         try {
             String runString = this.handler.printableCommandLine();
             logger.debug(runString);
-            String title = String.format("Git %s running", "command");
+            String title = String.format("Git %s running", this.command);
             GitCommandResult ret = ProgressManager.getInstance().run(new Task.WithResult<GitCommandResult, VcsException>(project, title, true) {
                 @Override
                 protected GitCommandResult compute(@NotNull ProgressIndicator indicator) {

@@ -100,7 +100,7 @@ public class GitLabUtil {
         return manager.getRepositories();
     }
 
-    public static List<GitRepository> getRepositories(Project project, String... branch) {
+    public static List<GitRepository> getCommonRepositories(Project project, String... branch) {
         return getRepositories(project).stream().filter(f -> {
             List<String> remoteBranch = f.getBranches().getRemoteBranches().stream().map(b -> {
                 return b.getNameForRemoteOperations();
