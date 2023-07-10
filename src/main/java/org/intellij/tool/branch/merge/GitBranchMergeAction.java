@@ -12,7 +12,7 @@ public class GitBranchMergeAction extends DumbAwareAction {
         if (project == null) {
             return;
         }
-        GitBranchMergeDialog.build(project);
+        GitBranchMergeDialog.build(e);
     }
 
 }

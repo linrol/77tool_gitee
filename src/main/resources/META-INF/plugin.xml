@@ -89,6 +89,10 @@
             <add-to-group group-id="GitRepositoryActions" anchor="before" relative-to-action="org.intellij.tool.branch.merge.request.GitCommitMrAction"/>
         </action>
 
+        <action id="org.intellij.tool.branch.merge.GitBranchUpdateAction" class="org.intellij.tool.branch.merge.GitBranchUpdateAction" text="ToolGitUpdate"
+                description="ToolGitUpdate">
+        </action>
+
 <!--    <action id="mr" class="org.intellij.tool.branch.mr.CommitMrActionxt="Create Merge Request" description="Create merge request To current branch">-->
 <!--        <add-to-group group-id="org.intellij.tool.77toolGroup" anchor="first"/>-->
 <!--    </action>-->

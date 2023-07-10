@@ -1,7 +1,11 @@
 package org.intellij.tool.branch.merge;
 
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vcs.AbstractVcs;
+import com.intellij.openapi.vcs.FilePath;
+import com.intellij.vcsUtil.VcsUtil;
 import git4idea.GitLocalBranch;
 import git4idea.GitReference;
 import git4idea.GitRemoteBranch;
@@ -29,6 +33,8 @@ public class GitBranchMergeDialog extends JDialog {
     private JButton buttonOK;
     private JButton buttonCancel;
 
+    private AnActionEvent actionEvent;
+
     private Project project;
 
     private Map<String, String> branchMap;
@@ -41,6 +47,10 @@ public class GitBranchMergeDialog extends JDialog {
 
     // 工程模块
     private JComboBox<String> module;
+
+    public void setActionEvent(AnActionEvent actionEvent) {
+        this.actionEvent = actionEvent;
+    }
 
     public void setProject(Project project) {
         this.project = project;
@@ -71,12 +81,13 @@ public class GitBranchMergeDialog extends JDialog {
         modules.forEach(name -> module.addItem(name));
     }
 
-    public GitBranchMergeDialog(Project project) {
+    public GitBranchMergeDialog(AnActionEvent actionEvent) {
         setLocationRelativeTo(contentPane);
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
-        setProject(project);
+        setActionEvent(actionEvent);
+        setProject(actionEvent.getProject());
         AutoCompletion.enable(source);
         AutoCompletion.enable(target);
         AutoCompletion.enable(module);
@@ -95,9 +106,9 @@ public class GitBranchMergeDialog extends JDialog {
         contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
-    public static void build(Project project) {
-        GitBranchMergeDialog dialog = new GitBranchMergeDialog(project);
-        List<GitRepository> repos = GitLabUtil.getRepositories(project);
+    public static void build(AnActionEvent actionEvent) {
+        GitBranchMergeDialog dialog = new GitBranchMergeDialog(actionEvent);
+        List<GitRepository> repos = GitLabUtil.getRepositories(actionEvent.getProject());
         dialog.branchBindData(getBranchList(repos));
         dialog.moduleBindData(getModuleList(repos));
         dialog.pack();
@@ -121,7 +132,7 @@ public class GitBranchMergeDialog extends JDialog {
     }
 
     private void onOK() {
-        commonMerge();
+        commonMerge(this.actionEvent);
         dispose();
     }
 
@@ -129,7 +140,7 @@ public class GitBranchMergeDialog extends JDialog {
         dispose();
     }
 
-    public void commonMerge() {
+    public void commonMerge(AnActionEvent e) {
         withExceptionRun(() -> {
             String sourceBranch = source.getEditor().getItem().toString();
             String targetBranch = target.getEditor().getItem().toString();
@@ -147,9 +158,18 @@ public class GitBranchMergeDialog extends JDialog {
                 withExceptionRun(() -> {
                     boolean checkoutRet = assertRepoBranch(repositories, targetBranch);
                     if (checkoutRet) {
-                        if (pull(repositories)) {
+                        /** if (pull(repositories)) {
                             brancher.merge(getBranchMap().get(sourceBranch), GitBrancher.DeleteOnMergeOption.NOTHING, repositories);
-                        }
+                        } **/
+                        GitBranchUpdateAction toolGitUpdate = (GitBranchUpdateAction) e.getActionManager().getAction("org.intellij.tool.branch.merge.GitBranchUpdateAction");
+                        toolGitUpdate.setSuccess(() -> {
+                            brancher.merge(getBranchMap().get(sourceBranch), GitBrancher.DeleteOnMergeOption.NOTHING, repositories);
+                        });
+                        toolGitUpdate.actionPerformed(e);
+                        /** GitUpdateAction action = new GitUpdateAction(ActionInfo.UPDATE, ScopeInfo.PROJECT, true, () -> {
+                            brancher.merge(getBranchMap().get(sourceBranch), GitBrancher.DeleteOnMergeOption.NOTHING, repositories);
+                        });
+                        action.actionPerformed(e); **/
                     }
                 });
             };
@@ -168,6 +188,26 @@ public class GitBranchMergeDialog extends JDialog {
             }
             return ret;
         }).reduce((r1, r2) -> r1 && r2).orElse(false);
+    }
+
+    private FilePath[] getFilePaths(List<GitRepository> repositories) {
+        return repositories.stream().map(repo -> {
+            return VcsUtil.getFilePath(repo.getRoot());
+        }).toArray(FilePath[]::new);
+    }
+
+    private Map<AbstractVcs, Collection<FilePath>> getVcsRoot(List<GitRepository> repositories) {
+        Map<AbstractVcs, Collection<FilePath>> vcsRoot = new HashMap<>();
+        repositories.forEach(repo -> {
+            vcsRoot.compute(repo.getVcs(), (k, v) -> {
+                if (v == null) {
+                    v = new ArrayList<>();
+                }
+                v.add(VcsUtil.getFilePath(repo.getRoot()));
+                return v;
+            });
+        });
+        return vcsRoot;
     }
 
     private void checkParams(String sourceBranch, String targetBranch, String moduleName, List<GitRepository> repositories) {
