@@ -162,7 +162,7 @@ public class LocalCommonMergeDialog extends JDialog {
                         /** if (pull(repositories)) {
                             brancher.merge(getBranchMap().get(sourceBranch), GitBrancher.DeleteOnMergeOption.NOTHING, repositories);
                         } **/
-                        UpdateAction toolGitUpdate = (UpdateAction) e.getActionManager().getAction("org.intellij.tool.branch.merge.GitBranchUpdateAction");
+                        UpdateAction toolGitUpdate = (UpdateAction) e.getActionManager().getAction("org.intellij.tool.branch.update.UpdateAction");
                         toolGitUpdate.setSuccess(() -> {
                             brancher.merge(getBranchMap().get(sourceBranch), GitBrancher.DeleteOnMergeOption.NOTHING, repositories);
                         });
