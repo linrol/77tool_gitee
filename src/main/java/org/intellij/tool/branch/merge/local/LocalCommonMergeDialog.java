@@ -1,5 +1,6 @@
 package org.intellij.tool.branch.merge.local;
 
+import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
@@ -162,11 +163,11 @@ public class LocalCommonMergeDialog extends JDialog {
                         /** if (pull(repositories)) {
                             brancher.merge(getBranchMap().get(sourceBranch), GitBrancher.DeleteOnMergeOption.NOTHING, repositories);
                         } **/
-                        UpdateAction toolGitUpdate = (UpdateAction) e.getActionManager().getAction("org.intellij.tool.branch.update.UpdateAction");
-                        toolGitUpdate.setSuccess(() -> {
+                        AnAction updateAction =  e.getActionManager().getAction("org.intellij.tool.branch.update.UpdateAction");
+                        ((UpdateAction)updateAction).setSuccess(() -> {
                             brancher.merge(getBranchMap().get(sourceBranch), GitBrancher.DeleteOnMergeOption.NOTHING, repositories);
                         });
-                        toolGitUpdate.actionPerformed(e);
+                        updateAction.actionPerformed(e);
                         /** GitUpdateAction action = new GitUpdateAction(ActionInfo.UPDATE, ScopeInfo.PROJECT, true, () -> {
                             brancher.merge(getBranchMap().get(sourceBranch), GitBrancher.DeleteOnMergeOption.NOTHING, repositories);
                         });
