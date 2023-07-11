@@ -4,14 +4,13 @@ import com.intellij.execution.filters.TextConsoleBuilderFactory;
 import com.intellij.execution.ui.ConsoleView;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.content.Content;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class MslToolWindowFactory implements ToolWindowFactory {
+public class ToolWindowFactory implements com.intellij.openapi.wm.ToolWindowFactory {
 
     public static JComponent createConsolePanel(ConsoleView view) {
         JPanel panel = new JPanel();
@@ -33,7 +32,7 @@ public class MslToolWindowFactory implements ToolWindowFactory {
         Content content = toolWindow.getContentManager().getFactory().createContent(consolePanel, "控制台", false);
         toolWindow.getContentManager().addContent(content);
         // console.print("------------after add consoleView to tool------------" + "\n", ConsoleViewContentType.LOG_INFO_OUTPUT);
-        new ToolWindowConsole(toolWindow, console, project);
+        ToolWindowConsole.register(console, project);
         //PropertiesCenter.init(project);
         //console.setOutputPaused(true);
     }

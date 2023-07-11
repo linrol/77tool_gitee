@@ -13,10 +13,9 @@ public class ToolWindowConsole {
     private static ConsoleView console;
     public static boolean isShow;
 
-
-    public ToolWindowConsole(ToolWindow toolWindow, ConsoleView console, Project project) {
-        this.console = console;
-        this.project = project;
+    public static void register(ConsoleView console, Project project) {
+        ToolWindowConsole.console = console;
+        ToolWindowConsole.project = project;
     }
 
     public static void show() {

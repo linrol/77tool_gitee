@@ -1,4 +1,4 @@
-package org.intellij.tool.branch.merge;
+package org.intellij.tool.branch.merge.local;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
@@ -14,8 +14,9 @@ import git4idea.commands.GitCommand;
 import git4idea.commands.GitCommandResult;
 import git4idea.repo.GitRepository;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.intellij.tool.branch.update.UpdateAction;
 import org.intellij.tool.model.GitCmd;
-import org.intellij.tool.swing.AutoCompletion;
+import org.intellij.tool.utils.AutoCompletion;
 import org.intellij.tool.utils.GitLabUtil;
 
 import javax.swing.*;
@@ -25,9 +26,9 @@ import java.util.stream.Collectors;
 
 import static org.intellij.tool.utils.StringUtils.isBlank;
 
-public class GitBranchMergeDialog extends JDialog {
+public class LocalCommonMergeDialog extends JDialog {
 
-    private static final Logger logger = Logger.getInstance(GitBranchMergeDialog.class);
+    private static final Logger logger = Logger.getInstance(LocalCommonMergeDialog.class);
 
     private JPanel contentPane;
     private JButton buttonOK;
@@ -81,7 +82,7 @@ public class GitBranchMergeDialog extends JDialog {
         modules.forEach(name -> module.addItem(name));
     }
 
-    public GitBranchMergeDialog(AnActionEvent actionEvent) {
+    public LocalCommonMergeDialog(AnActionEvent actionEvent) {
         setLocationRelativeTo(contentPane);
         setContentPane(contentPane);
         setModal(true);
@@ -107,7 +108,7 @@ public class GitBranchMergeDialog extends JDialog {
     }
 
     public static void build(AnActionEvent actionEvent) {
-        GitBranchMergeDialog dialog = new GitBranchMergeDialog(actionEvent);
+        LocalCommonMergeDialog dialog = new LocalCommonMergeDialog(actionEvent);
         List<GitRepository> repos = GitLabUtil.getRepositories(actionEvent.getProject());
         dialog.branchBindData(getBranchList(repos));
         dialog.moduleBindData(getModuleList(repos));
@@ -161,7 +162,7 @@ public class GitBranchMergeDialog extends JDialog {
                         /** if (pull(repositories)) {
                             brancher.merge(getBranchMap().get(sourceBranch), GitBrancher.DeleteOnMergeOption.NOTHING, repositories);
                         } **/
-                        GitBranchUpdateAction toolGitUpdate = (GitBranchUpdateAction) e.getActionManager().getAction("org.intellij.tool.branch.merge.GitBranchUpdateAction");
+                        UpdateAction toolGitUpdate = (UpdateAction) e.getActionManager().getAction("org.intellij.tool.branch.merge.GitBranchUpdateAction");
                         toolGitUpdate.setSuccess(() -> {
                             brancher.merge(getBranchMap().get(sourceBranch), GitBrancher.DeleteOnMergeOption.NOTHING, repositories);
                         });

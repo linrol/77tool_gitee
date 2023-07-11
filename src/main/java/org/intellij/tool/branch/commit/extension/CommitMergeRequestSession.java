@@ -1,4 +1,4 @@
-package org.intellij.tool.branch.merge.request;
+package org.intellij.tool.branch.commit.extension;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
@@ -20,13 +20,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
-public class GitCommitMrSession implements CommitSession {
+public class CommitMergeRequestSession implements CommitSession {
 
-    private static final Logger logger = Logger.getInstance(GitCommitMrSession.class);
+    private static final Logger logger = Logger.getInstance(CommitMergeRequestSession.class);
 
     private final Project project;
 
-    public GitCommitMrSession(Project project) {
+    public CommitMergeRequestSession(Project project) {
         this.project = project;
     }
 

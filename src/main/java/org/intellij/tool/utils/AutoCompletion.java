@@ -1,4 +1,4 @@
-package org.intellij.tool.swing;
+package org.intellij.tool.utils;
 
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;

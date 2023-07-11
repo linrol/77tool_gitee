@@ -16,11 +16,11 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class GitMergeRequestAction extends PushActionBase {
+public class MergeRequestAction extends PushActionBase {
 
-  private static final Logger logger = Logger.getInstance(GitMergeRequestAction.class);
+  private static final Logger logger = Logger.getInstance(MergeRequestAction.class);
 
-  GitMergeRequestAction() {
+  MergeRequestAction() {
     super("Merge Request");
   }
 

@@ -1,8 +1,8 @@
-package org.intellij.tool.branch.merge;
+package org.intellij.tool.branch.update;
 
 import com.intellij.openapi.vcs.update.CommonUpdateProjectAction;
 
-public class GitBranchUpdateAction extends CommonUpdateProjectAction {
+public class UpdateAction extends CommonUpdateProjectAction {
 
     private Runnable runnable;
 
