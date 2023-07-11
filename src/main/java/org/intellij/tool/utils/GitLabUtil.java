@@ -153,8 +153,7 @@ public class GitLabUtil {
         GitLineHandler handler = new GitLineHandler(project, repository.getRoot(), GitCommand.REMOTE);
         handler.setSilent(true);
         handler.addParameters("add", remote, url);
-        Git git = project.getService(Git.class);
-        GitCommandResult result = git.runCommand(handler);
+        GitCommandResult result = Git.getInstance().runCommand(handler);
         if (result.getExitCode() != 0) {
             // showErrorDialog(project, "New remote origin cannot be added to this project.", "Cannot Add New Remote");
             return false;
