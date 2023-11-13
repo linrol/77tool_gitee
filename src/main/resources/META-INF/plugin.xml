@@ -60,6 +60,9 @@
         <toolWindow id="77tool" canCloseContents="false" anchor="bottom" factoryClass="org.intellij.tool.toolwindow.ToolWindowFactory"/>
         <vcs.changes.localCommitExecutor implementation="org.intellij.tool.branch.commit.extension.CommitMergeRequestExecutor"/>
 
+        <projectService serviceInterface="com.intellij.openapi.vcs.AbstractVcsHelper"
+          serviceImplementation="org.intellij.tool.extend.vcs.AbstractVcsHelperImplEx" overrides="true"/>
+
         <!--<pushDialogActionsProvider implementation="org.intellij.tool.branch.push.PushAndBuildActionProvider"/>-->
     </extensions>
     <actions>
