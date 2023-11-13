@@ -16,7 +16,6 @@ import com.intellij.diff.tools.util.text.LineOffsets;
 import com.intellij.diff.tools.util.text.LineOffsetsUtil;
 import com.intellij.diff.util.DiffUtil;
 import com.intellij.diff.util.LineRange;
-import com.intellij.diff.util.MergeConflictType;
 import com.intellij.diff.util.ThreeSide;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.command.UndoConfirmationPolicy;
@@ -46,6 +45,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import kotlin.collections.CollectionsKt;
 import org.intellij.tool.utils.FileUtils;
+import org.intellij.tool.utils.diff.MergeConflictType;
+import org.intellij.tool.utils.diff.MergeRangeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -169,7 +170,7 @@ public abstract class ResolveConflicts {
             ignorePolicy.getComparisonPolicy(), indicator);
 
         conflictTypes = ContainerUtil.map(lineFragments, fragment ->
-            DiffUtil.getLineMergeType(fragment, sequences, lineOffsets,
+            MergeRangeUtil.getLineMergeType(fragment, sequences, lineOffsets,
                 ignorePolicy.getComparisonPolicy()));
         myModel.setChanges(
             ContainerUtil.map(lineFragments, f -> new LineRange(f.getStartLine(ThreeSide.BASE),

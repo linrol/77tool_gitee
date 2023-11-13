@@ -1,10 +1,14 @@
 package org.intellij.tool.extend.vcs;
 
+import static com.intellij.openapi.vcs.VcsNotifier.STANDARD_NOTIFICATION;
+
+import com.intellij.notification.NotificationType;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.FilePath;
 import com.intellij.openapi.vcs.VcsBundle;
 import com.intellij.openapi.vcs.VcsException;
+import com.intellij.openapi.vcs.VcsNotifier;
 import com.intellij.openapi.vcs.impl.AbstractVcsHelperImpl;
 import com.intellij.openapi.vcs.merge.MergeDialogCustomizer;
 import com.intellij.openapi.vcs.merge.MergeProvider;
@@ -17,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.intellij.tool.extend.vcs.resolve.ResolveConflicts;
+import org.intellij.tool.model.GitCmd;
 import org.jetbrains.annotations.NotNull;
 
 public class AbstractVcsHelperImplEx extends AbstractVcsHelperImpl {
@@ -34,7 +39,15 @@ public class AbstractVcsHelperImplEx extends AbstractVcsHelperImpl {
       @NotNull MergeProvider provider,
       @NotNull MergeDialogCustomizer mergeDialogCustomizer) {
     if (files.isEmpty()) return Collections.emptyList();
-    autoResolve(files, provider);
+    try {
+      autoResolve(files, provider);
+    }catch (Throwable e){
+      e.printStackTrace();
+      VcsNotifier vcsNotifier = VcsNotifier.getInstance(project);
+      vcsNotifier.notify(
+          STANDARD_NOTIFICATION.createNotification(e.toString(), NotificationType.ERROR));
+    }
+
     return super.showMergeDialog(files, provider, mergeDialogCustomizer);
   }
 
