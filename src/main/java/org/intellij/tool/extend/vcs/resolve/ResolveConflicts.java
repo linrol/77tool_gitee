@@ -203,18 +203,19 @@ public abstract class ResolveConflicts {
       return false;
     }
 
-    if(myModel.isInsideCommand()){
+//    if(myModel.isInsideCommand()){
+    myModel.isInsideCommand();
       WriteCommandAction.runWriteCommandAction(project, () -> {
         //do something
         newContentMap.forEach((index, newContent) -> myModel.replaceChange(index, newContent));
         request.applyResult(MergeResult.RESOLVED);
       });
-    }else {
-      myModel.executeMergeCommand(DiffBundle.message("merge.dialog.apply.non.conflicted.changes.command"), null, UndoConfirmationPolicy.DEFAULT, true, null, () -> {
-        newContentMap.forEach((index, newContent) -> myModel.replaceChange(index, newContent));
-        request.applyResult(MergeResult.RESOLVED);
-      });
-    }
+//    }else {
+//      myModel.executeMergeCommand(DiffBundle.message("merge.dialog.apply.non.conflicted.changes.command"), null, UndoConfirmationPolicy.DEFAULT, true, null, () -> {
+//        newContentMap.forEach((index, newContent) -> myModel.replaceChange(index, newContent));
+//        request.applyResult(MergeResult.RESOLVED);
+//      });
+//    }
     return true;
   }
 
