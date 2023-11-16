@@ -16,7 +16,7 @@ public class SqlResolveConflicts extends ResolveConflicts {
   List<String> getNewContentOfConflict(MergeLineFragment fragment) {
     int rightStartLine = fragment.getStartLine(ThreeSide.RIGHT);
     int rightEndLine = fragment.getEndLine(ThreeSide.RIGHT);
-    Document rightDocument = getRequest().getContents().get(ThreeSide.LEFT.getIndex()).getDocument();
+    Document rightDocument = getRequest().getContents().get(ThreeSide.RIGHT.getIndex()).getDocument();
 
     if (!canIgnore(DiffUtil.getLines(rightDocument, rightStartLine, rightEndLine))) {
       return null;
