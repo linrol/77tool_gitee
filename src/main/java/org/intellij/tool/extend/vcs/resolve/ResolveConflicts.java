@@ -18,10 +18,8 @@ import com.intellij.diff.util.DiffUtil;
 import com.intellij.diff.util.LineRange;
 import com.intellij.diff.util.ThreeSide;
 import com.intellij.openapi.application.ReadAction;
-import com.intellij.openapi.command.UndoConfirmationPolicy;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.diff.DiffBundle;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.progress.ProgressManager;
@@ -204,7 +202,7 @@ public abstract class ResolveConflicts {
     }
 
 //    if(myModel.isInsideCommand()){
-    myModel.isInsideCommand();
+//    myModel.isInsideCommand();
       WriteCommandAction.runWriteCommandAction(project, () -> {
         //do something
         newContentMap.forEach((index, newContent) -> myModel.replaceChange(index, newContent));
@@ -270,6 +268,9 @@ public abstract class ResolveConflicts {
     protected void reinstallHighlighters(int index) {
     }
 
+    public boolean isInsideCommand() {
+      return true;
+    }
     @NotNull
     @Override
     protected TextMergeChange.State storeChangeState(int index) {
