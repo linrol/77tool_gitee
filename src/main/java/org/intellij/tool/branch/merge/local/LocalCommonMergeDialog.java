@@ -1,5 +1,6 @@
 package org.intellij.tool.branch.merge.local;
 
+import com.google.common.collect.Sets;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
@@ -14,6 +15,7 @@ import git4idea.branch.GitBrancher;
 import git4idea.commands.GitCommand;
 import git4idea.commands.GitCommandResult;
 import git4idea.repo.GitRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.intellij.tool.branch.update.UpdateAction;
 import org.intellij.tool.model.GitCmd;
@@ -49,6 +51,9 @@ public class LocalCommonMergeDialog extends JDialog {
 
     // 工程模块
     private JComboBox<String> module;
+
+    // 检查目标分支是否包含来源分支的所有工程
+    private JCheckBox checkContainSource;
 
     public void setActionEvent(AnActionEvent actionEvent) {
         this.actionEvent = actionEvent;
@@ -227,6 +232,19 @@ public class LocalCommonMergeDialog extends JDialog {
         }
         if (repositories.size() < 1) {
             throw new RuntimeException(String.format("根据来源【%s】和目标【%s】分支未找到交集的工程，终止合并！！！", sourceBranch, targetBranch));
+        }
+        if (checkContainSource.isSelected()) {
+            Set<String> sourceRepos = GitLabUtil.getRepositories(project).stream().filter(f -> {
+                return f.getBranches().getRemoteBranches()
+                    .stream()
+                    .map(GitRemoteBranch::getNameForRemoteOperations)
+                    .anyMatch(branch -> branch.equals(sourceBranch));
+            }).map(repo -> repo.getRoot().getName()).collect(Collectors.toSet());
+            Set<String> commonRepos = repositories.stream().map(repo -> repo.getRoot().getName()).collect(Collectors.toSet());
+            Set<String> diffRepos = Sets.difference(sourceRepos, commonRepos);
+            if (!diffRepos.isEmpty()) {
+                throw new RuntimeException(String.format("目标分支缺少工程模块【%s】", StringUtils.join(diffRepos, ",")));
+            }
         }
     }
 
