@@ -52,9 +52,6 @@ public class LocalCommonMergeDialog extends JDialog {
     // 工程模块
     private JComboBox<String> module;
 
-    // 检查目标分支是否包含来源分支的所有工程
-    private JCheckBox checkContainSource;
-
     public void setActionEvent(AnActionEvent actionEvent) {
         this.actionEvent = actionEvent;
     }
@@ -134,7 +131,8 @@ public class LocalCommonMergeDialog extends JDialog {
         List<String> list = repos.stream().map(p -> {
             return p.getRoot().getName();
         }).distinct().collect(Collectors.toList());
-        list.add(0, "共有分支工程集合");
+        list.add(0, "交集分支的全部工程");
+        list.add(1, "来源分支的全部工程");
         return list;
     }
 
@@ -153,7 +151,7 @@ public class LocalCommonMergeDialog extends JDialog {
             String targetBranch = target.getEditor().getItem().toString();
             String moduleName = module.getEditor().getItem().toString();
             List<GitRepository> repositories = GitLabUtil.getCommonRepositories(project, sourceBranch, targetBranch).stream().filter(repo -> {
-                if (moduleName.equals("共有分支工程集合")) {
+                if (moduleName.equals("交集分支的全部工程")) {
                     return true;
                 }
                 return moduleName.equals(repo.getRoot().getName());
@@ -230,10 +228,10 @@ public class LocalCommonMergeDialog extends JDialog {
         if (isBlank(moduleName)) {
             throw new RuntimeException("工程模块必填");
         }
-        if (repositories.size() < 1) {
+        if (repositories.isEmpty()) {
             throw new RuntimeException(String.format("根据来源【%s】和目标【%s】分支未找到交集的工程，终止合并！！！", sourceBranch, targetBranch));
         }
-        if (checkContainSource.isSelected()) {
+        if ("来源分支的全部工程".equals(moduleName)) {
             Set<String> sourceRepos = GitLabUtil.getRepositories(project).stream().filter(f -> {
                 return f.getBranches().getRemoteBranches()
                     .stream()
