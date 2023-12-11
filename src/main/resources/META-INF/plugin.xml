@@ -90,7 +90,7 @@
         </action>
 
         <!-- Local Common Merge -->
-        <action id="org.intellij.tool.branch.merge.local.LocalCommonMergeAction" class="org.intellij.tool.branch.merge.local.LocalCommonMergeAction"
+        <action id="org.intellij.tool.branch.merge.local.CommonMergeAction" class="org.intellij.tool.branch.merge.local.CommonMergeAction"
                 text="Common Merge"
                 description="Multi project common merge"
                 icon="/icons/multi-merge.svg">
