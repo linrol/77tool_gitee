@@ -37,9 +37,9 @@ class CommonMergeDialog(
 ) : DialogWrapper(project, /* canBeParent */ true) {
 
 
-    private val branchSource = createComboBoxWithAutoCompletion("Specify branch")
-    private val branchTarget = createComboBoxWithAutoCompletion("Specify branch")
-    private val moduleBox = createComboBoxWithAutoCompletion("select module")
+    private val branchSource = createComboBoxWithAutoCompletion("请选择来源分支")
+    private val branchTarget = createComboBoxWithAutoCompletion("请选择目标分支")
+    private val moduleBox = createComboBoxWithAutoCompletion("请选择工程模块")
     private val innerPanel = createInnerPanel()
     private val panel = createPanel()
 
@@ -66,7 +66,7 @@ class CommonMergeDialog(
 
     override fun getPreferredFocusedComponent() = branchSource
 
-    override fun doValidateAll(): List<ValidationInfo> = validateBranchNames()
+    override fun doValidateAll(): List<ValidationInfo> = validates()
 
     private fun createPanel() =
             JPanel().apply {
@@ -134,33 +134,35 @@ class CommonMergeDialog(
         moduleBox.setSelectedIndex(0)
     }
 
-    private fun validateBranchNames(): List<ValidationInfo> {
+    private fun validates(): List<ValidationInfo> {
         val validators = mutableListOf<ValidationInfo>()
-        if (branchSource.getText().isNullOrBlank()) {
+        val source = branchSource.getText()
+        val target = branchTarget.getText()
+        if (source.isNullOrBlank()) {
             validators.add(ValidationInfo("来源分支名必填", branchSource))
         }
-        if (branchTarget.getText().isNullOrBlank()) {
+        if (target.isNullOrBlank()) {
             validators.add(ValidationInfo("目标分支名必填", branchTarget))
         }
-        if (branchSource.getText().equals(branchTarget.getText())) {
+        if (source == target) {
             validators.add(ValidationInfo("来源分支和目标分支不允许相同", branchTarget))
         }
         val module = moduleBox.getText()
         if (module.isNullOrBlank()) {
             validators.add(ValidationInfo("工程模块必填", moduleBox))
         }
-        val commonRepos = GitLabUtil.getCommonRepositories(project, branchSource.getText(), branchTarget.getText()).filter {
+        val commonRepos = GitLabUtil.getCommonRepositories(project, source, target).filter {
             module == "交集分支的全部工程" || module == it.root.name
         }
         if (commonRepos.isEmpty()) {
-            val error = "来源【%s】和目标【%s】分支未找到交集的工程！！！".format(branchSource.getText(), branchTarget.getText())
-            validators.add(ValidationInfo(error, moduleBox))
+            validators.add(ValidationInfo("来源和目标分支不存在交集工程", moduleBox))
         }
         if (module == "来源分支的全部工程") {
-            val sourceRepos = repos.filter { it.branches.remoteBranches.any { branch -> branch.nameForRemoteOperations == branchSource.getText() } }
+            val sourceRepos = repos.filter { it.branches.remoteBranches.any { branch -> branch.nameForRemoteOperations == source } }
             val diffRepos = Sets.difference(sourceRepos.map { it.root.name }.toSet(), commonRepos.map { it.root.name }.toSet())
             if (!diffRepos.isEmpty()) {
-                validators.add(ValidationInfo("目标分支缺少工程模块【%s】".format(diffRepos.joinToString(",")), moduleBox))
+                val error = "目标分支缺少工程模块【%s】".format(diffRepos.joinToString(","))
+                validators.add(ValidationInfo(error, moduleBox))
             }
         }
         return validators
