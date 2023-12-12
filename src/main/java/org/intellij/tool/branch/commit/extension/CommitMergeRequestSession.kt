@@ -1,76 +1,45 @@
-package org.intellij.tool.branch.commit.extension;
+package org.intellij.tool.branch.commit.extension
 
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.NlsSafe;
-import com.intellij.openapi.vcs.changes.Change;
-import com.intellij.openapi.vcs.changes.CommitSession;
-import com.intellij.openapi.vcs.checkin.CheckinEnvironment;
-import org.intellij.tool.branch.command.GitCommand;
-import org.intellij.tool.model.GitCmd;
-import org.intellij.tool.utils.GitLabUtil;
-import org.intellij.tool.utils.StringUtils;
+import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.NlsSafe
+import com.intellij.openapi.vcs.changes.Change
+import com.intellij.openapi.vcs.changes.CommitSession
+import git4idea.GitVcs
+import org.apache.commons.lang3.exception.ExceptionUtils
+import org.intellij.tool.branch.command.GitCommand.push
+import org.intellij.tool.model.GitCmd
+import org.intellij.tool.utils.GitLabUtil
 
-import java.util.ArrayList;
-import java.util.List;
-import git4idea.GitVcs;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Collection;
-
-public class CommitMergeRequestSession implements CommitSession {
-
-    private static final Logger logger = Logger.getInstance(CommitMergeRequestSession.class);
-
-    private final Project project;
-
-    public CommitMergeRequestSession(Project project) {
-        this.project = project;
+class CommitMergeRequestSession(private val project: Project) : CommitSession {
+    companion object {
+        private val logger = logger<CommitMergeRequestSession>()
     }
 
-    @Override
-    public boolean canExecute(Collection<Change> changes, String commitMessage) {
-        return changes.size() > 0;
+    override fun canExecute(changes: Collection<Change>, commitMessage: String): Boolean {
+        return changes.isNotEmpty()
     }
 
-    @Override
-    public void execute(@NotNull Collection<Change> changes, @Nullable @NlsSafe String commitMessage) {
+    override fun execute(changes: Collection<Change>, commitMessage: @NlsSafe String?) {
         try {
-            GitCmd.clear();
-            List<Change> changeList = new ArrayList<>(changes);
-            CheckinEnvironment checkinEnvironment = GitVcs.getInstance(project).getCheckinEnvironment();
-            if (checkinEnvironment == null) {
-                throw new RuntimeException("getCheckinEnvironment null");
+            GitCmd.clear()
+            val changeList = changes.toList()
+            val checkinEnvironment = GitVcs.getInstance(project).checkinEnvironment ?: throw RuntimeException("getCheckinEnvironment null")
+            if (commitMessage.isNullOrBlank()) {
+                throw RuntimeException("请输入提交消息")
             }
-            if (commitMessage == null || StringUtils.isBlank(commitMessage)) {
-                throw new RuntimeException("请输入提交消息");
+            checkinEnvironment.commit(changeList, commitMessage)
+            GitLabUtil.getRepositories(project, changeList).forEach {
+                push(GitCmd(project, it))
             }
-            // GitLabUtil.groupByRepository(project, changeList);
-            checkinEnvironment.commit(changeList, commitMessage);
-            GitLabUtil.getRepositories(project, changeList).forEach(repo -> {
-                GitCommand.push(new GitCmd(project, repo));
-            });
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-            GitCmd.log(project, ExceptionUtils.getRootCauseMessage(e));
-        } catch (Throwable e) {
-            e.printStackTrace();
-            GitCmd.log(project, ExceptionUtils.getRootCauseMessage(e));
-            logger.error("GitCommitMrSession execute failed", e);
+        } catch (e: RuntimeException) {
+            e.printStackTrace()
+            GitCmd.log(project, ExceptionUtils.getRootCauseMessage(e))
+        } catch (e: Throwable) {
+            e.printStackTrace()
+            GitCmd.log(project, ExceptionUtils.getRootCauseMessage(e))
+            logger.error("GitCommitMrSession execute failed", e)
         }
     }
-
-    /** private void commit(Collection<Change> changes) {
-        // AbstractVcsHelper helper = AbstractVcsHelper.getInstance(project);
-        // helper.commitChanges()
-        ChangeListManager manager = ChangeListManager.getInstance(project);
-        LocalChangeList changeList = manager.getChangeList(changes.stream().findFirst().get());
-        if (changeList == null) {
-            return;
-        }
-        manager.commitChanges(changeList, new ArrayList<>(changes));
-    } **/
 
 }

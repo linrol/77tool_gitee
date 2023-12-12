@@ -1,44 +1,28 @@
-package org.intellij.tool.branch.commit.extension;
+package org.intellij.tool.branch.commit.extension
 
-import com.intellij.openapi.extensions.ExtensionPoint;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.changes.CommitContext;
-import com.intellij.openapi.vcs.changes.CommitSession;
-import com.intellij.openapi.vcs.changes.LocalCommitExecutor;
-import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.vcs.changes.CommitContext
+import com.intellij.openapi.vcs.changes.CommitSession
+import com.intellij.openapi.vcs.changes.LocalCommitExecutor
 
-public class CommitMergeRequestExecutor extends LocalCommitExecutor {
-
-    private final Project project;
-
-    public CommitMergeRequestExecutor(Project project) {
-        this.project = project;
+class CommitMergeRequestExecutor(private val project: Project) : LocalCommitExecutor() {
+    override fun getHelpId(): String {
+        return "Commit And Merge Request"
     }
 
-    public static CommitMergeRequestExecutor getInstance(Project project) {
-        final ExtensionPoint<LocalCommitExecutor> extPoint = project.getExtensionArea().getExtensionPoint(LOCAL_COMMIT_EXECUTOR.getName());
-        return (CommitMergeRequestExecutor) extPoint.extensions().filter(e -> e.getClass().equals(
-            CommitMergeRequestExecutor.class)).findFirst().get();
+    override fun getActionText(): String {
+        return "Commit And Merge Request"
     }
 
-
-    @Override
-    public @Nullable @NonNls String getHelpId() {
-        return "Commit And Merge Request";
+    override fun createCommitSession(commitContext: CommitContext): CommitSession {
+        return CommitMergeRequestSession(project)
     }
 
-    @Override
-    public @Nls @NotNull String getActionText() {
-        return "Commit And Merge Request";
-    }
-
-    @Override
-    public @NotNull
-    CommitSession createCommitSession(@NotNull CommitContext commitContext) {
-        // return CommitSession.VCS_COMMIT;
-        return new CommitMergeRequestSession(project);
+    companion object {
+        @JvmStatic
+        fun getInstance(project: Project): CommitMergeRequestExecutor {
+            val extPoint = project.extensionArea.getExtensionPoint<LocalCommitExecutor>(LOCAL_COMMIT_EXECUTOR.name)
+            return extPoint.extensions().filter { it is CommitMergeRequestExecutor }.findFirst().get() as CommitMergeRequestExecutor
+        }
     }
 }

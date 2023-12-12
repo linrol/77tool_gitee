@@ -179,11 +179,10 @@ class CommonMergeDialog(
             withExceptionRun {
                 val checkoutRet = assertRepoBranch(commonRepos, target)
                 if (checkoutRet) {
-                    val updateAction = action.actionManager.getAction("org.intellij.tool.branch.update.UpdateAction")
-                    (updateAction as UpdateAction).setSuccess {
+                    val updateAction = action.actionManager.getAction("org.intellij.tool.branch.update.UpdateAction") as UpdateAction
+                    updateAction.success {
                         brancher.merge(branches[source].toString(), GitBrancher.DeleteOnMergeOption.NOTHING, commonRepos)
-                    }
-                    updateAction.actionPerformed(action)
+                    }.actionPerformed(action)
                 }
             }
         }

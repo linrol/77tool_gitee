@@ -1,22 +1,22 @@
-package org.intellij.tool.branch.update;
+package org.intellij.tool.branch.update
 
-import com.intellij.openapi.vcs.update.CommonUpdateProjectAction;
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.vcs.update.CommonUpdateProjectAction
 
-public class UpdateAction extends CommonUpdateProjectAction {
+class UpdateAction : CommonUpdateProjectAction() {
 
-    private Runnable runnable;
+    private lateinit var callback: () -> Unit
 
-    @Override
-    protected boolean filterRootsBeforeAction() {
-        return false;
+    override fun filterRootsBeforeAction(): Boolean {
+        return false
     }
 
-    public void setSuccess(Runnable success) {
-        this.runnable = success;
+    fun success(callback: () -> Unit): AnAction {
+        this.callback = callback
+        return this
     }
 
-    @Override
-    protected void onSuccess() {
-        runnable.run();
+    override fun onSuccess() {
+        callback.invoke()
     }
 }

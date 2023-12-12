@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.intellij.tool.extend.vcs.resolve.ResolveConflicts;
-import org.intellij.tool.model.GitCmd;
 import org.jetbrains.annotations.NotNull;
 
 public class AbstractVcsHelperImplEx extends AbstractVcsHelperImpl {
