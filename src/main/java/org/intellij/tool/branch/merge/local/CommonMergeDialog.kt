@@ -189,6 +189,7 @@ class CommonMergeDialog(
             }
         }
         brancher.checkout(target, false, commonRepos, callInAwtLater)
+        super.doOKAction()
     }
 
     private fun assertRepoBranch(repositories: List<GitRepository>, branchName: String): Boolean {
