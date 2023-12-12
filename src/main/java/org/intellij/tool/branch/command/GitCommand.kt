@@ -23,10 +23,6 @@ object GitCommand {
         }
         repository.currentBranch ?: throw RuntimeException("本地仓库当前分支获取失败")
 
-        val branch = cmd.currentBranchName
-        if (branch.isNullOrBlank()) {
-            throw RuntimeException("本地仓库当前分支获取失败")
-        }
         commit(changes)
         return push(cmd)
     }

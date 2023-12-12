@@ -167,10 +167,10 @@ public class LocalCommonMergeDialog extends JDialog {
                             brancher.merge(getBranchMap().get(sourceBranch), GitBrancher.DeleteOnMergeOption.NOTHING, repositories);
                         } **/
                         AnAction updateAction =  e.getActionManager().getAction("org.intellij.tool.branch.update.UpdateAction");
-                        ((UpdateAction)updateAction).setSuccess(() -> {
+                        ((UpdateAction)updateAction).success(() -> {
                             brancher.merge(getBranchMap().get(sourceBranch), GitBrancher.DeleteOnMergeOption.NOTHING, repositories);
-                        });
-                        updateAction.actionPerformed(e);
+                            return null;
+                        }).actionPerformed(e);
                         /** GitUpdateAction action = new GitUpdateAction(ActionInfo.UPDATE, ScopeInfo.PROJECT, true, () -> {
                             brancher.merge(getBranchMap().get(sourceBranch), GitBrancher.DeleteOnMergeOption.NOTHING, repositories);
                         });
