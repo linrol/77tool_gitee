@@ -161,8 +161,7 @@ class CommonMergeDialog(
             val sourceRepos = repos.filter { it.branches.remoteBranches.any { branch -> branch.nameForRemoteOperations == source } }
             val diffRepos = Sets.difference(sourceRepos.map { it.root.name }.toSet(), commonRepos.map { it.root.name }.toSet())
             if (!diffRepos.isEmpty()) {
-                val error = "目标分支缺少工程模块【%s】".format(diffRepos.joinToString(","))
-                validators.add(ValidationInfo(error, moduleBox))
+                validators.add(ValidationInfo("目标分支缺少工程模块【${diffRepos.joinToString(",")}】", moduleBox))
             }
         }
         return validators
@@ -198,7 +197,7 @@ class CommonMergeDialog(
             val ret = branch != null && branch.name == branchName
             if (!ret) {
                 val module = repo.root.name
-                GitCmd.log(project, String.format("工程【%s】切换分支到【%s】失败，终止合并！！！", module, branchName))
+                GitCmd.log(project, "工程【${module}】切换分支到【${branchName}】失败，终止合并！！！")
             }
             ret
         }.reduce { r1, r2 -> r1 && r2 }.or(false)
