@@ -1,34 +1,28 @@
-package org.intellij.tool.state;
+package org.intellij.tool.state
 
-import com.intellij.ui.components.JBCheckBox;
-import com.intellij.util.ui.FormBuilder;
-import javax.swing.*;
+import com.intellij.ui.components.JBCheckBox
+import com.intellij.util.ui.FormBuilder
+import javax.swing.JComponent
+import javax.swing.JPanel
 
-public class ToolSettingsComponent {
+class ToolSettingsComponent {
+    val panel: JPanel
+    private val buildAfterPush = JBCheckBox("Enable ops build after successful push? ")
 
-    private final JPanel myMainPanel;
-    private final JBCheckBox buildAfterPush = new JBCheckBox("Enable ops build after successful push? ");
-
-    public ToolSettingsComponent() {
-        myMainPanel = FormBuilder.createFormBuilder()
+    init {
+        panel = FormBuilder.createFormBuilder()
                 .addComponent(buildAfterPush, 1)
-                .addComponentFillVertically(new JPanel(), 0)
-                .getPanel();
+                .addComponentFillVertically(JPanel(), 0)
+                .panel
     }
 
-    public JComponent getPreferredFocusedComponent() {
-        return buildAfterPush;
+    val preferredFocusedComponent: JComponent get() = buildAfterPush
+
+    fun getBuildAfterPush(): Boolean {
+        return buildAfterPush.isSelected
     }
 
-    public JPanel getPanel() {
-        return myMainPanel;
-    }
-
-    public Boolean getBuildAfterPush() {
-       return buildAfterPush.isSelected();
-    }
-
-    public void setBuildAfterPush(boolean newStatus) {
-        buildAfterPush.setSelected(newStatus);
+    fun setBuildAfterPush(newStatus: Boolean) {
+        buildAfterPush.isSelected = newStatus
     }
 }

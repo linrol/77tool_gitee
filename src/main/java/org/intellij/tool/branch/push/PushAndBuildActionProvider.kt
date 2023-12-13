@@ -14,7 +14,7 @@ class PushAndBuildActionProvider : PushDialogActionsProvider {
 
     internal inner class PushAndBuildAction : PushActionBase() {
         override fun isEnabled(dialog: VcsPushUi): Boolean {
-            return ToolSettingsState.getInstance().buildAfterPush
+            return ToolSettingsState.instance.buildAfterPush
         }
 
         override fun getDescription(dialog: VcsPushUi, enabled: Boolean): @Nls String {

@@ -1,41 +1,39 @@
-package org.intellij.tool.toolwindow;
-import com.intellij.execution.filters.TextConsoleBuilder;
-import com.intellij.execution.filters.TextConsoleBuilderFactory;
-import com.intellij.execution.ui.ConsoleView;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.ui.content.Content;
-import org.jetbrains.annotations.NotNull;
+package org.intellij.tool.toolwindow
 
-import javax.swing.*;
-import java.awt.*;
+import com.intellij.execution.filters.TextConsoleBuilderFactory
+import com.intellij.execution.ui.ConsoleView
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.wm.ToolWindow
+import com.intellij.openapi.wm.ToolWindowFactory
+import org.intellij.tool.toolwindow.ToolWindowConsole.register
+import java.awt.BorderLayout
+import javax.swing.JComponent
+import javax.swing.JPanel
 
-public class ToolWindowFactory implements com.intellij.openapi.wm.ToolWindowFactory {
-
-    public static JComponent createConsolePanel(ConsoleView view) {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
-        panel.add(view.getComponent(), BorderLayout.CENTER);
-        return panel;
+class ToolWindowFactory : ToolWindowFactory {
+    override fun shouldBeAvailable(project: Project): Boolean {
+        return true
     }
 
-    @Override
-    public boolean shouldBeAvailable(@NotNull Project project) {
-        return true;
-    }
-
-    @Override
-    public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
-        TextConsoleBuilder consoleBuilder = TextConsoleBuilderFactory.getInstance().createBuilder(project);
-        ConsoleView console = consoleBuilder.getConsole();
-        JComponent consolePanel = createConsolePanel(console);
-        Content content = toolWindow.getContentManager().getFactory().createContent(consolePanel, "控制台", false);
-        toolWindow.getContentManager().addContent(content);
+    override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
+        val consoleBuilder = TextConsoleBuilderFactory.getInstance().createBuilder(project)
+        val console = consoleBuilder.console
+        val consolePanel = createConsolePanel(console)
+        val content = toolWindow.contentManager.factory.createContent(consolePanel, "控制台", false)
+        toolWindow.contentManager.addContent(content)
         // console.print("------------after add consoleView to tool------------" + "\n", ConsoleViewContentType.LOG_INFO_OUTPUT);
-        ToolWindowConsole.register(console, project);
+        register(console, project)
         //PropertiesCenter.init(project);
         //console.setOutputPaused(true);
     }
 
 
+    companion object {
+        fun createConsolePanel(view: ConsoleView): JComponent {
+            val panel = JPanel()
+            panel.layout = BorderLayout()
+            panel.add(view.component, BorderLayout.CENTER)
+            return panel
+        }
+    }
 }
