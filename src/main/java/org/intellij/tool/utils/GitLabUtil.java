@@ -91,7 +91,7 @@ public class GitLabUtil {
         });
 
         return repoFilesMap.entrySet().stream().map(entry -> {
-            return RepositoryChange.of(entry.getKey(), entry.getValue());
+            return new RepositoryChange(entry.getKey(), entry.getValue());
         }).collect(Collectors.toList());
     }
 

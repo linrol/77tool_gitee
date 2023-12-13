@@ -9,7 +9,7 @@ import org.intellij.tool.utils.TimeUtils
 
 object GitCommand {
     private fun createMergeRequest(project: Project, changes: RepositoryChange): GitCommandResult? {
-        val repository = changes.repository ?: throw RuntimeException("你所选中的好像不是git工程目录，请重新选择")
+        val repository = changes.repository
 
         val cmd = GitCmd(project, repository)
         val remotes = repository.remotes
@@ -18,7 +18,7 @@ object GitCommand {
         }
 
         val url = cmd.remoteUrl
-        if (url.isNullOrBlank()) {
+        if (url.isBlank()) {
             throw RuntimeException("远程仓库未找到不存在，请检查你的git remote配置")
         }
         repository.currentBranch ?: throw RuntimeException("本地仓库当前分支获取失败")
