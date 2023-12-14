@@ -22,7 +22,7 @@ class ToolWindowFactory : ToolWindowFactory {
         val content = toolWindow.contentManager.factory.createContent(consolePanel, "控制台", false)
         toolWindow.contentManager.addContent(content)
         // console.print("------------after add consoleView to tool------------" + "\n", ConsoleViewContentType.LOG_INFO_OUTPUT);
-        register(console, project)
+        register(console)
         //PropertiesCenter.init(project);
         //console.setOutputPaused(true);
     }

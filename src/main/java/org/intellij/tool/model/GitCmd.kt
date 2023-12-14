@@ -97,7 +97,7 @@ class GitCmd(private var project: Project, private var repository: GitRepository
                 ApplicationManager.getApplication().invokeLater {
                     toolWindow.activate {
                         ToolWindowConsole.show()
-                        ToolWindowConsole.log(msg)
+                        ToolWindowConsole.log(project, msg)
                     }
                 }
                 // EventQueue.invokeAndWait(() -> );

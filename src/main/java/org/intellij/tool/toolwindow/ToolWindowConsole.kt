@@ -1,18 +1,17 @@
 package org.intellij.tool.toolwindow
 
+import com.intellij.execution.filters.TextConsoleBuilderFactory
 import com.intellij.execution.ui.ConsoleView
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.project.Project
 import org.intellij.tool.utils.TimeUtils
 
 object ToolWindowConsole {
-    private lateinit var project: Project
-    private lateinit var console: ConsoleView
+    private var console: ConsoleView? = null
     private var isShow: Boolean = false
 
-    fun register(console: ConsoleView, project: Project) {
+    fun register(console: ConsoleView) {
         ToolWindowConsole.console = console
-        ToolWindowConsole.project = project
     }
 
     fun show() {
@@ -20,14 +19,13 @@ object ToolWindowConsole {
     }
 
     fun clear() {
-        console.clear()
+        console?.clear()
     }
 
-    fun log(s: String) {
-        if (console.isOutputPaused) {
-            console.isOutputPaused = false
+    fun log(project: Project, s: String) {
+        (console ?: TextConsoleBuilderFactory.getInstance().createBuilder(project).console).let {
+            val time = TimeUtils.getCurrentTime(null)
+            it.print("$time $s\n", ConsoleViewContentType.NORMAL_OUTPUT)
         }
-        val time = TimeUtils.getCurrentTime(null)
-        console.print("$time $s\n", ConsoleViewContentType.NORMAL_OUTPUT)
     }
 }
