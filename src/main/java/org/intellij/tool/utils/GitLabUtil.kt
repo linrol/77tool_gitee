@@ -1,44 +1,40 @@
-package org.intellij.tool.utils;
+package org.intellij.tool.utils
 
-import com.intellij.concurrency.JobScheduler;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.ProjectRootManager;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.util.Ref;
-import com.intellij.openapi.util.ThrowableComputable;
-import com.intellij.openapi.vcs.changes.Change;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.ThrowableConvertor;
-import com.intellij.util.containers.Convertor;
-import git4idea.branch.GitBrancher;
-import org.intellij.tool.model.RepositoryChange;
-import git4idea.GitUtil;
-import git4idea.commands.Git;
-import git4idea.commands.GitCommand;
-import git4idea.commands.GitCommandResult;
-import git4idea.commands.GitLineHandler;
-import git4idea.config.GitExecutableManager;
-import git4idea.config.GitVersion;
-import git4idea.fetch.GitFetchResult;
-import git4idea.fetch.GitFetchSupport;
-import git4idea.repo.GitRepository;
-import git4idea.repo.GitRepositoryManager;
-
-import java.util.*;
-import java.util.stream.Collectors;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.io.IOException;
-import java.net.URI;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import com.intellij.concurrency.JobScheduler
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.progress.Task
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.roots.ProjectRootManager
+import com.intellij.openapi.ui.Messages
+import com.intellij.openapi.util.Ref
+import com.intellij.openapi.util.ThrowableComputable
+import com.intellij.openapi.vcs.changes.Change
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.util.ThrowableConvertor
+import com.intellij.util.containers.Convertor
+import git4idea.GitRemoteBranch
+import git4idea.GitUtil
+import git4idea.commands.Git
+import git4idea.commands.GitCommand
+import git4idea.commands.GitLineHandler
+import git4idea.config.GitExecutableManager
+import git4idea.config.GitVersion
+import git4idea.fetch.GitFetchResult
+import git4idea.fetch.GitFetchSupport
+import git4idea.repo.GitRepository
+import org.intellij.tool.model.RepositoryChange
+import java.io.BufferedReader
+import java.io.IOException
+import java.net.URI
+import java.util.*
+import java.util.concurrent.ScheduledFuture
+import java.util.concurrent.TimeUnit
+import java.util.function.BiFunction
+import java.util.function.Consumer
+import java.util.regex.Pattern
+import java.util.stream.Collectors
+import kotlin.streams.toList
 
 /**
  * GitLab specific untils
@@ -46,121 +42,98 @@ import java.util.regex.Pattern;
  * @author ppolivka
  * @since 28.10.2015
  */
-@SuppressWarnings("Duplicates")
-public class GitLabUtil {
-
-    @Nullable
-    public static GitRepository getGitRepository(@NotNull Project project, @NotNull VirtualFile file) {
-        GitRepositoryManager manager = GitUtil.getRepositoryManager(project);
-        List<GitRepository> repositories = manager.getRepositories();
-        if (repositories.size() == 0) {
-            return null;
+object GitLabUtil {
+    fun getGitRepository(project: Project, file: VirtualFile): GitRepository? {
+        val manager = GitUtil.getRepositoryManager(project)
+        val repositories = manager.repositories
+        if (repositories.isEmpty()) {
+            return null
         }
-        if (repositories.size() == 1) {
-            return repositories.get(0);
+        if (repositories.size == 1) {
+            return repositories[0]
         }
-        GitRepository repository = manager.getRepositoryForFile(file);
+        val repository = manager.getRepositoryForFile(file)
         if (repository != null) {
-            return repository;
+            return repository
         }
-        VirtualFile projectFile = ProjectRootManager.getInstance(project).getFileIndex().getContentRootForFile(file);;
-        if (projectFile == null) {
-            return null;
+        ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(file)?.let {
+            manager.getRepositoryForFile(it)
         }
-        return manager.getRepositoryForFile(projectFile);
+        return null
     }
 
-    public static List<RepositoryChange> groupByRepository(Project project, List<Change> files) {
-        GitRepositoryManager manager = GitUtil.getRepositoryManager(project);
-        Map<GitRepository, List<Change>> repoFilesMap = new HashMap<>();
-        files.forEach(change -> {
-            VirtualFile virtualFile = change.getVirtualFile();
-            if (virtualFile == null) {
-                return;
-            }
-            GitRepository repository = manager.getRepositoryForFile(virtualFile);
-            repoFilesMap.compute(repository, (k, v) -> {
-                if (v == null) {
-                    List<Change> list = new ArrayList<>();
-                    list.add(change);
-                    return list;
+    fun groupByRepository(project: Project, files: List<Change>): List<RepositoryChange> {
+        val manager = GitUtil.getRepositoryManager(project)
+        val repoFilesMap: MutableMap<GitRepository, MutableList<Change>> = HashMap()
+        files.forEach { change ->
+            change.virtualFile?.let { virtualFile ->
+                manager.getRepositoryForFile(virtualFile)?.let { repository ->
+                    repoFilesMap.compute(repository) { _, v ->
+                        v?.apply { add(change) } ?: mutableListOf(change)
+                    }
                 }
-                v.add(change);
-                return v;
-            });
-        });
-
-        return repoFilesMap.entrySet().stream().map(entry -> {
-            return new RepositoryChange(entry.getKey(), entry.getValue());
-        }).collect(Collectors.toList());
+            }
+        }
+        return repoFilesMap.entries.map { RepositoryChange(it.key, it.value) }
     }
 
-    public static List<GitRepository> getRepositories(Project project) {
-        GitRepositoryManager manager = GitUtil.getRepositoryManager(project);
-        return manager.getRepositories();
+    fun getRepositories(project: Project): List<GitRepository> {
+        val manager = GitUtil.getRepositoryManager(project)
+        return manager.repositories
     }
 
-    public static List<GitRepository> getCommonRepositories(Project project, String... branch) {
-        return getRepositories(project).stream().filter(f -> {
-            List<String> remoteBranch = f.getBranches().getRemoteBranches().stream().map(b -> {
-                return b.getNameForRemoteOperations();
-            }).collect(Collectors.toList());
-            return new HashSet<>(remoteBranch).containsAll(Arrays.asList(branch));
-        }).collect(Collectors.toList());
+    fun getCommonRepositories(project: Project, vararg branch: String): List<GitRepository> {
+        return getRepositories(project).filter { f -> f.branches.remoteBranches.map { it.nameForRemoteOperations }.toSet().containsAll(branch.toSet()) }
     }
 
-    public static List<GitRepository> getRepositories(Project project, List<Change> files) {
-        GitRepositoryManager manager = GitUtil.getRepositoryManager(project);
-        return files.stream().filter(f -> {
-            return f.getVirtualFile() != null;
-        }).map(m -> manager.getRepositoryForFile(m.getVirtualFile())).distinct().collect(Collectors.toList());
+    fun getRepositories(project: Project, files: List<Change>): List<GitRepository> {
+        val manager = GitUtil.getRepositoryManager(project)
+        return files.filter { it.virtualFile != null }.map { manager.getRepositoryForFile(it.virtualFile!!) }.filterNotNull().distinct()
     }
 
-    public static boolean isGitLabUrl(String testUrl, String url) {
+    fun isGitLabUrl(testUrl: String, url: String): Boolean {
         try {
-            URI fromSettings = new URI(testUrl);
-            String fromSettingsHost = fromSettings.getHost();
+            val fromSettings = URI(testUrl)
+            val fromSettingsHost = fromSettings.host
 
-            String patternString = "(\\w+://)(.+@)*([\\w\\d\\.\\-]+)(:[\\d]+){0,1}/*(.*)|(.+@)*([\\w\\d\\.\\-]+):(.*)";
-            Pattern pattern = Pattern.compile(patternString);
-            Matcher matcher = pattern.matcher(url);
-            String fromUrlHost = "";
+            val patternString = "(\\w+://)(.+@)*([\\w\\d\\.\\-]+)(:[\\d]+){0,1}/*(.*)|(.+@)*([\\w\\d\\.\\-]+):(.*)"
+            val pattern = Pattern.compile(patternString)
+            val matcher = pattern.matcher(url)
+            var fromUrlHost = ""
             if (matcher.matches()) {
-                String group3 = matcher.group(3);
-                String group7 = matcher.group(7);
-                if (StringUtils.isBlank(group3)) {
-                    fromUrlHost = group3;
-                } else if (!StringUtils.isBlank(group7)) {
-                    fromUrlHost = group7;
+                val group3 = matcher.group(3)
+                val group7 = matcher.group(7)
+                if (group3.isNotBlank()) {
+                    fromUrlHost = group3
+                } else if (group7.isNotBlank()) {
+                    fromUrlHost = group7
                 }
             }
-            return fromSettingsHost != null && removeNotAlpha(fromSettingsHost).equals(removeNotAlpha(fromUrlHost));
-        } catch (Exception e) {
-            return false;
+            return fromSettingsHost != null && removeNotAlpha(fromSettingsHost) == removeNotAlpha(fromUrlHost)
+        } catch (e: Exception) {
+            return false
         }
     }
 
-    public static String removeNotAlpha(String input) {
-        input = input.replaceAll("[^a-zA-Z0-9]", "");
-        input = input.toLowerCase();
-        return input;
+    private fun removeNotAlpha(input: String): String {
+        return input.replace("[^a-zA-Z0-9]".toRegex(), "").lowercase(Locale.getDefault())
     }
 
-    public static boolean addGitLabRemote(@NotNull Project project,
-                                          @NotNull GitRepository repository,
-                                          @NotNull String remote,
-                                          @NotNull String url) {
-        GitLineHandler handler = new GitLineHandler(project, repository.getRoot(), GitCommand.REMOTE);
-        handler.setSilent(true);
-        handler.addParameters("add", remote, url);
-        GitCommandResult result = Git.getInstance().runCommand(handler);
-        if (result.getExitCode() != 0) {
+    fun addGitLabRemote(project: Project,
+                        repository: GitRepository,
+                        remote: String,
+                        url: String): Boolean {
+        val handler = GitLineHandler(project, repository.root, GitCommand.REMOTE)
+        handler.setSilent(true)
+        handler.addParameters("add", remote, url)
+        val result = Git.getInstance().runCommand(handler)
+        if (result.exitCode != 0) {
             // showErrorDialog(project, "New remote origin cannot be added to this project.", "Cannot Add New Remote");
-            return false;
+            return false
         }
         // catch newly added remote
-        repository.update();
-        return true;
+        repository.update()
+        return true
     }
 
     /**
@@ -169,133 +142,118 @@ public class GitLabUtil {
      * @param project
      * @return
      */
-    public static boolean testGitExecutable(final Project project) {
-        GitExecutableManager manager = GitExecutableManager.getInstance();
-        final String executable = manager.getPathToGit(project);
-        final GitVersion version;
-        try {
-            version = manager.getVersion(project);
-        } catch (Exception e) {
+    fun testGitExecutable(project: Project): Boolean {
+        val manager = GitExecutableManager.getInstance()
+        // val executable = manager.getPathToGit(project)
+        // val version: GitVersion
+        return try {
+            manager.getVersion(project).isSupported
+        } catch (e: Exception) {
             // showErrorDialog(project, "Cannot find git executable.", "Cannot Find Git");
-            return false;
+            false
         }
-
-        if (!version.isSupported()) {
-            // showErrorDialog(project, "Your version of git is not supported.", "Cannot Find Git");
-            return false;
-        }
-        return true;
     }
 
-    public static <T> T computeValueInModal(@NotNull Project project,
-                                            @NotNull String caption,
-                                            @NotNull final ThrowableConvertor<ProgressIndicator, T, IOException> task) throws IOException {
-        final Ref<T> dataRef = new Ref<T>();
-        final Ref<Throwable> exceptionRef = new Ref<Throwable>();
-        ProgressManager.getInstance().run(new Task.Modal(project, caption, true) {
-            public void run(@NotNull ProgressIndicator indicator) {
+    @Throws(IOException::class)
+    fun <T> computeValueInModal(project: Project,
+                                caption: String,
+                                task: ThrowableConvertor<ProgressIndicator?, T, IOException?>): T {
+        val dataRef = Ref<T>()
+        val exceptionRef = Ref<Throwable>()
+        ProgressManager.getInstance().run(object : Task.Modal(project, caption, true) {
+            override fun run(indicator: ProgressIndicator) {
                 try {
-                    dataRef.set(task.convert(indicator));
-                } catch (Throwable e) {
-                    exceptionRef.set(e);
+                    dataRef.set(task.convert(indicator))
+                } catch (e: Throwable) {
+                    exceptionRef.set(e)
                 }
             }
-        });
-        if (!exceptionRef.isNull()) {
-            Throwable e = exceptionRef.get();
-            if (e instanceof IOException) {
-                throw ((IOException) e);
+        })
+        if (!exceptionRef.isNull) {
+            val e = exceptionRef.get()
+            if (e is IOException) {
+                throw (e)
             }
-            if (e instanceof RuntimeException) {
-                throw ((RuntimeException) e);
+            if (e is RuntimeException) {
+                throw (e)
             }
-            if (e instanceof Error) {
-                throw ((Error) e);
+            if (e is Error) {
+                throw (e)
             }
-            throw new RuntimeException(e);
+            throw RuntimeException(e)
         }
-        return dataRef.get();
+        return dataRef.get()
     }
 
-    public static <T> T computeValueInModal(@NotNull Project project,
-                                            @NotNull String caption,
-                                            @NotNull final Convertor<ProgressIndicator, T> task) {
-        return computeValueInModal(project, caption, true, task);
+    fun <T> computeValueInModal(project: Project,
+                                caption: String,
+                                task: Convertor<ProgressIndicator?, T>): T {
+        return computeValueInModal(project, caption, true, task)
     }
 
-    public static <T> T computeValueInModal(@NotNull Project project,
-                                            @NotNull String caption,
-                                            boolean canBeCancelled,
-                                            @NotNull final Convertor<ProgressIndicator, T> task) {
-        final Ref<T> dataRef = new Ref<T>();
-        final Ref<Throwable> exceptionRef = new Ref<Throwable>();
-        ProgressManager.getInstance().run(new Task.Modal(project, caption, canBeCancelled) {
-            public void run(@NotNull ProgressIndicator indicator) {
+    private fun <T> computeValueInModal(project: Project,
+                                        caption: String,
+                                        canBeCancelled: Boolean,
+                                        task: Convertor<ProgressIndicator?, T>): T {
+        val dataRef = Ref<T>()
+        val exceptionRef = Ref<Throwable>()
+        ProgressManager.getInstance().run(object : Task.Modal(project, caption, canBeCancelled) {
+            override fun run(indicator: ProgressIndicator) {
                 try {
-                    dataRef.set(task.convert(indicator));
-                } catch (Throwable e) {
-                    exceptionRef.set(e);
+                    dataRef.set(task.convert(indicator))
+                } catch (e: Throwable) {
+                    exceptionRef.set(e)
                 }
             }
-        });
-        if (!exceptionRef.isNull()) {
-            Throwable e = exceptionRef.get();
-            if (e instanceof RuntimeException) {
-                throw ((RuntimeException) e);
+        })
+        if (!exceptionRef.isNull) {
+            val e = exceptionRef.get()
+            if (e is RuntimeException) {
+                throw (e)
             }
-            if (e instanceof Error) {
-                throw ((Error) e);
+            if (e is Error) {
+                throw (e)
             }
-            throw new RuntimeException(e);
+            throw RuntimeException(e)
         }
-        return dataRef.get();
+        return dataRef.get()
     }
 
-    public static <T> T runInterruptable(@NotNull final ProgressIndicator indicator,
-                                         @NotNull ThrowableComputable<T, IOException> task) throws IOException {
-        ScheduledFuture<?> future = null;
+    @Throws(IOException::class)
+    fun <T> runInterruptable(indicator: ProgressIndicator,
+                             task: ThrowableComputable<T, IOException?>): T {
+        var future: ScheduledFuture<*>? = null
         try {
-            final Thread thread = Thread.currentThread();
-            future = addCancellationListener(indicator, thread);
+            val thread = Thread.currentThread()
+            future = addCancellationListener(indicator, thread)
 
-            return task.compute();
+            return task.compute()
         } finally {
-            if (future != null) {
-                future.cancel(true);
-            }
-            Thread.interrupted();
+            future?.cancel(true)
+            Thread.interrupted()
         }
     }
 
-    @NotNull
-    private static ScheduledFuture<?> addCancellationListener(@NotNull final ProgressIndicator indicator,
-                                                              @NotNull final Thread thread) {
-        return addCancellationListener(new Runnable() {
-            @Override
-            public void run() {
-                if (indicator.isCanceled()) {
-                    thread.interrupt();
-                }
+    private fun addCancellationListener(indicator: ProgressIndicator,
+                                        thread: Thread): ScheduledFuture<*> {
+        return addCancellationListener {
+            if (indicator.isCanceled) {
+                thread.interrupt()
             }
-        });
+        }
     }
 
-    @NotNull
-    private static ScheduledFuture<?> addCancellationListener(@NotNull Runnable run) {
-        return JobScheduler.getScheduler().scheduleWithFixedDelay(run, 1000, 300, TimeUnit.MILLISECONDS);
+    private fun addCancellationListener(run: Runnable): ScheduledFuture<*> {
+        return JobScheduler.getScheduler().scheduleWithFixedDelay(run, 1000, 300, TimeUnit.MILLISECONDS)
     }
 
     @Messages.YesNoResult
-    public static boolean showYesNoDialog(@Nullable Project project, @NotNull String title, @NotNull String message) {
-        return Messages.YES == Messages.showYesNoDialog(project, message, title, Messages.getQuestionIcon());
-    }
-    @NotNull
-    public static GitFetchResult fetch(@NotNull Project project) {
-        return fetch(project, GitUtil.getRepositories(project));
+    fun showYesNoDialog(project: Project?, title: String, message: String): Boolean {
+        return Messages.YES == Messages.showYesNoDialog(project, message, title, Messages.getQuestionIcon())
     }
 
-    @NotNull
-    public static GitFetchResult fetch(@NotNull Project project, Collection<GitRepository> repositories) {
-        return GitFetchSupport.fetchSupport(project).fetchAllRemotes(repositories);
+    @JvmOverloads
+    fun fetch(project: Project, repositories: Collection<GitRepository?>? = GitUtil.getRepositories(project)): GitFetchResult {
+        return GitFetchSupport.fetchSupport(project).fetchAllRemotes(repositories!!)
     }
 }

@@ -1,16 +1,12 @@
-package org.intellij.tool.utils;
+package org.intellij.tool.utils
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
-public class TimeUtils {
+object TimeUtils {
+    private var defaultPattern: String = "yyyy-MM-dd HH:mm:ss.SSS"
 
-    static String defaultPattern = "yyyy-MM-dd HH:mm:ss.SSS";
-
-    public static String getCurrentTime(String pattern) {
-        if (StringUtils.isBlank(pattern)) {
-            pattern = defaultPattern;
-        }
-        return LocalDateTime.now().format(DateTimeFormatter.ofPattern(pattern));
+    fun getCurrentTime(pattern: String?): String {
+        return LocalDateTime.now().format(DateTimeFormatter.ofPattern(pattern ?: defaultPattern))
     }
 }

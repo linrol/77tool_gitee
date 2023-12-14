@@ -119,13 +119,11 @@ public abstract class ResolveConflicts {
       Consumer<? super MergeResult> callback = result -> {
 
         Document document = request.getContents().get(ThreeSide.BASE.getIndex()).getDocument();
-        if (document != null) {
-          FileUtils.saveDocument(file, document);
-        }
+        FileUtils.INSTANCE.saveDocument(file, document);
         MergeUtil.reportProjectFileChangeIfNeeded(project, file);
 
         if (result != MergeResult.CANCEL) {
-          List<VirtualFile> markFiles = new ArrayList();
+          List<VirtualFile> markFiles = new ArrayList<>();
           markFiles.add(file);
         }
       };

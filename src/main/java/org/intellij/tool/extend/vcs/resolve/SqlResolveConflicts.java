@@ -6,7 +6,7 @@ import com.intellij.diff.util.ThreeSide;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import java.util.List;
-import org.intellij.tool.utils.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class SqlResolveConflicts extends ResolveConflicts {
 

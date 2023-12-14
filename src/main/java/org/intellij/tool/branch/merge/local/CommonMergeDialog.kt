@@ -140,9 +140,11 @@ class CommonMergeDialog(
         val target = branchTarget.getText()
         if (source.isNullOrBlank()) {
             validators.add(ValidationInfo("来源分支名必填", branchSource))
+            return validators
         }
         if (target.isNullOrBlank()) {
             validators.add(ValidationInfo("目标分支名必填", branchTarget))
+            return validators
         }
         if (source == target) {
             validators.add(ValidationInfo("来源分支和目标分支不允许相同", branchTarget))
@@ -169,9 +171,9 @@ class CommonMergeDialog(
 
     override fun doOKAction() {
         val brancher = GitBrancher.getInstance(project)
-        val source = branchSource.getText().toString()
-        val target = branchTarget.getText().toString()
-        val module = moduleBox.getText().toString()
+        val source = branchSource.getText()!!
+        val target = branchTarget.getText()!!
+        val module = moduleBox.getText()
         val commonRepos = GitLabUtil.getCommonRepositories(project, source, target).filter {
             module == "交集分支的全部工程" || module == it.root.name
         }
