@@ -188,10 +188,12 @@ class CommonMergeDialog(
                 if (checkoutRet) {
                     val updateAction = action.actionManager.getAction("org.intellij.tool.branch.update.UpdateAction") as UpdateAction
                     updateAction.success {
-                        val vcsHelper = AbstractVcsHelper.getInstance(project) as AbstractVcsHelperImplEx
-                        vcsHelper.apply {
-                            setCallAfterMerged {
-                                ChangeVersion(project).run(target)
+                        commonRepos.find { it.root.name == "build" } ?.let {
+                            val vcsHelper = AbstractVcsHelper.getInstance(project) as AbstractVcsHelperImplEx
+                            vcsHelper.apply {
+                                setCallAfterMerged {
+                                    ChangeVersion(project).run(target)
+                                }
                             }
                         }
                         brancher.merge(branches[source].toString(), GitBrancher.DeleteOnMergeOption.NOTHING, commonRepos)
