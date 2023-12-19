@@ -25,6 +25,10 @@ repositories {
   mavenCentral()
 }
 
+dependencies {
+  implementation ("org.jdom:jdom2:2.0.6.1")
+}
+
 // Configure Gradle IntelliJ Plugin
 // Read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
 intellij {

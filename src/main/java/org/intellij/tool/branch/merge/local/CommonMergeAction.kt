@@ -6,8 +6,6 @@ import com.intellij.openapi.project.DumbAwareAction
 class CommonMergeAction : DumbAwareAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-
-        val dialog = CommonMergeDialog(project, e)
-        dialog.showAndGet()
+        CommonMergeDialog(project, e).showAndGet()
     }
 }

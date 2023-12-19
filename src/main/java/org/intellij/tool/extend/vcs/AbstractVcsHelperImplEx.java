@@ -27,6 +27,8 @@ public class AbstractVcsHelperImplEx extends AbstractVcsHelperImpl {
 
   private Project project;
 
+  private Runnable callAfterMerged;
+
 
   protected AbstractVcsHelperImplEx(@NotNull Project project) {
     super(project);
@@ -43,11 +45,11 @@ public class AbstractVcsHelperImplEx extends AbstractVcsHelperImpl {
     }catch (Throwable e){
       e.printStackTrace();
       VcsNotifier vcsNotifier = VcsNotifier.getInstance(project);
-      vcsNotifier.notify(
-          STANDARD_NOTIFICATION.createNotification(e.toString(), NotificationType.ERROR));
+      vcsNotifier.notify(STANDARD_NOTIFICATION.createNotification(e.toString(), NotificationType.ERROR));
     }
-
-    return super.showMergeDialog(files, provider, mergeDialogCustomizer);
+    List<VirtualFile> virtualFiles = super.showMergeDialog(files, provider, mergeDialogCustomizer);
+    changeVersionAfterMerged(files, virtualFiles);
+    return virtualFiles;
   }
 
   private void autoResolve(List<? extends VirtualFile> files, MergeProvider provider){
@@ -81,5 +83,22 @@ public class AbstractVcsHelperImplEx extends AbstractVcsHelperImpl {
             VcsBundle.message("multiple.file.merge.dialog.progress.title.resolving.conflicts"),
             true, project);
 
+  }
+
+  private void changeVersionAfterMerged(List<? extends VirtualFile> files, List<VirtualFile> virtualFiles) {
+    if (!virtualFiles.isEmpty() && virtualFiles.size() == files.size()) {
+      if (callAfterMerged != null) {
+        callAfterMerged.run();
+      }
+    }
+    clearCallAfterMerged();
+  }
+
+  public void setCallAfterMerged(Runnable callAfterMerged) {
+    this.callAfterMerged = callAfterMerged;
+  }
+
+  public void clearCallAfterMerged() {
+    callAfterMerged = null;
   }
 }

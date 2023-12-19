@@ -9,6 +9,7 @@ import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.ValidationInfo
+import com.intellij.openapi.vcs.AbstractVcsHelper
 import com.intellij.ui.MutableCollectionComboBoxModel
 import com.intellij.util.ui.JBUI
 import git4idea.branch.GitBrancher
@@ -17,6 +18,8 @@ import git4idea.ui.ComboBoxWithAutoCompletion
 import net.miginfocom.swing.MigLayout
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.intellij.tool.branch.update.UpdateAction
+import org.intellij.tool.branch.version.ChangeVersion
+import org.intellij.tool.extend.vcs.AbstractVcsHelperImplEx
 import org.intellij.tool.model.GitCmd
 import org.intellij.tool.utils.GitLabUtil
 import java.awt.Insets
@@ -72,7 +75,9 @@ class CommonMergeDialog(
             JPanel().apply {
                 layout = MigLayout(LayoutConstraint().insets("0").hideMode(3), AxisConstraint().grow())
 
-                add(innerPanel, ComponentConstraint().growX())
+                add(innerPanel, ComponentConstraint().growX().wrap())
+
+                // add(JCheckBox("合并后执行ChangeVersion？"))
             }
 
     private fun createInnerPanel(): JPanel {
@@ -183,6 +188,12 @@ class CommonMergeDialog(
                 if (checkoutRet) {
                     val updateAction = action.actionManager.getAction("org.intellij.tool.branch.update.UpdateAction") as UpdateAction
                     updateAction.success {
+                        val vcsHelper = AbstractVcsHelper.getInstance(project) as AbstractVcsHelperImplEx
+                        vcsHelper.apply {
+                            setCallAfterMerged {
+                                // ChangeVersion(project).run(target)
+                            }
+                        }
                         brancher.merge(branches[source].toString(), GitBrancher.DeleteOnMergeOption.NOTHING, commonRepos)
                     }.actionPerformed(action)
                 }
