@@ -43,7 +43,6 @@ class ChangeVersion(val project: Project) {
     }
 
     fun run(branch: String) {
-        val version = getConfigVersion()
         val todos = GitLabUtil.getCommonRepositories(project, branch).associateBy ( {it.root.name}, {it.root.path})
         todos.forEach { (name, path) ->
             val poms = searchPoms(path, 0)

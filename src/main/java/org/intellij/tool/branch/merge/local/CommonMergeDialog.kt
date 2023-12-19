@@ -191,7 +191,7 @@ class CommonMergeDialog(
                         val vcsHelper = AbstractVcsHelper.getInstance(project) as AbstractVcsHelperImplEx
                         vcsHelper.apply {
                             setCallAfterMerged {
-                                // ChangeVersion(project).run(target)
+                                ChangeVersion(project).run(target)
                             }
                         }
                         brancher.merge(branches[source].toString(), GitBrancher.DeleteOnMergeOption.NOTHING, commonRepos)
