@@ -74,7 +74,7 @@ class ChangeVersion(val project: Project) {
         val document = saxBuilder.build(file)
 
         val name = module.takeIf { !file.path.contains("platform") } ?: "platform"
-        if (updateParent(document) || updateSelf(document, name) || updateProperties(document) || updateDependencies(document) || updatePlugins(document)) {
+        if (updateParent(document) or updateSelf(document, name) or updateProperties(document) or updateDependencies(document) or updatePlugins(document)) {
             writeFile(document, file)
         }
     }
@@ -85,8 +85,10 @@ class ChangeVersion(val project: Project) {
         takeIf { group.text.contains("com.q7link") } ?. let {
            version.run {
                versions["framework"]?.let {
-                   this.setText(it.toString())
-                   return this.text != it.toString()
+                   if (this.text != it.toString()) {
+                       this.setText(it.toString())
+                       return true
+                   }
                }
            }
         }
@@ -97,8 +99,10 @@ class ChangeVersion(val project: Project) {
         val version = XPathHelper.getElement(document, "/ns:project/ns:version") ?: return false
         version.run {
             versions[module]?.let {
-                this.setText(it.toString())
-                return this.text != it.toString()
+                if (this.text != it.toString()) {
+                    this.setText(it.toString())
+                    return true
+                }
             }
         }
         return false
@@ -109,8 +113,10 @@ class ChangeVersion(val project: Project) {
         XPathHelper.getElements(document, "/ns:project/ns:properties").forEach {
             val elementName = it.text.replace("Version","")
             versions[elementName]?.let { version ->
-                it.setText(version.toString())
-                update = update || (it.text != version.toString())
+                if (it.text != version.toString()) {
+                    it.setText(version.toString())
+                    update = true
+                }
             }
         }
         return update
@@ -137,8 +143,10 @@ class ChangeVersion(val project: Project) {
                 return@forEach
             }
             versions[artifactId]?.let { version ->
-                versionNode.setText(version.toString())
-                update = update || (versionNode.text != version.toString())
+                if (versionNode.text != version.toString()) {
+                    versionNode.setText(version.toString())
+                    update = true
+                }
             }
         }
         return update
@@ -157,8 +165,10 @@ class ChangeVersion(val project: Project) {
                 return@forEach
             }
             versions[artifactNode.text]?.let { version ->
-                versionNode.setText(version.toString())
-                update = update || (versionNode.text != version.toString())
+                if (versionNode.text != version.toString()) {
+                    versionNode.setText(version.toString())
+                    update = true
+                }
             }
         }
         return update
