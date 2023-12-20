@@ -110,8 +110,8 @@ class ChangeVersion(val project: Project) {
 
     private fun updateProperties(document: Document) :Boolean {
         var update = false
-        XPathHelper.getElements(document, "/ns:project/ns:properties").forEach {
-            val elementName = it.text.replace("Version","")
+        XPathHelper.getElements(document, "/ns:project/ns:properties/*").forEach {
+            val elementName = toHyphen(it.name.replace("Version",""))
             versions[elementName]?.let { version ->
                 if (it.text != version.toString()) {
                     it.setText(version.toString())
@@ -179,5 +179,33 @@ class ChangeVersion(val project: Project) {
 
         val content = Paths.get(file.path).readText(Charsets.UTF_8).replace("""<?xml version="1.0" encoding="UTF-8"?>""", """<?xml version='1.0' encoding='UTF-8'?>""")
         Paths.get(file.path).write(content, Charsets.UTF_8)
+    }
+
+    private fun toCamelCase(input: String): String {
+        // Use regular expression to match spaces, underscores, or hyphens
+        val regexPattern = """[\s_-]"""
+
+        // Split the input string using the regex pattern
+        val words = input.split(regexPattern)
+
+        // Capitalize the first letter of each word (except the first word)
+        val camelCaseBuilder = StringBuilder(words[0])
+        for (i in 1 until words.size) {
+            camelCaseBuilder.append(words[i].replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() })
+        }
+
+        return camelCaseBuilder.toString()
+    }
+
+    fun toHyphen(camelCase: String): String {
+        // Use regular expression to match camel case
+        val regexPattern = "([a-z0-9])([A-Z])"
+
+        // Replace camel case with lower-hyphen
+        val hyphenString = camelCase.replace(Regex(regexPattern)) {
+            "${it.groupValues[1]}-${it.groupValues[2].lowercase(Locale.getDefault())}"
+        }
+
+        return hyphenString.lowercase(Locale.getDefault())
     }
 }
