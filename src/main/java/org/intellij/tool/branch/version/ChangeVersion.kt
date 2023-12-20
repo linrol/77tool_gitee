@@ -24,7 +24,7 @@ class ChangeVersion(val project: Project) {
 
     private val ignore = listOf("autotest-frame-starter", "dbtools", "grpc-clients")
 
-    private fun getConfigVersion(): Map<Any, Any> {
+    private fun getConfigVersion(): MutableMap<Any, Any> {
         val yaml = Yaml()
         val configFile: File = Paths.get("${project.basePath}/apps/build", "config.yaml").toFile()
         return try {
@@ -37,6 +37,7 @@ class ChangeVersion(val project: Project) {
                 this["framework"]?.let {
                     this["testapp"] = it
                     this["testapp-api"] = it
+                    this["version.framework"] = it
                 }
             }
         } catch (e: Exception) {
@@ -45,12 +46,13 @@ class ChangeVersion(val project: Project) {
     }
 
     fun run(branch: String) {
-        val todos = GitLabUtil.getCommonRepositories(project, branch).associateBy ( {it.root.name}, {it.root.path})
-        todos.forEach { (name, path) ->
+        val repos = GitLabUtil.getCommonRepositories(project, branch).associateBy ( {it.root.name}, {it.root.path})
+        repos.filter { it.value.contains("platform") }.keys.filter { !versions.containsKey(it) }.forEach { name ->
+            versions["framework"] ?.let { versions["version.framework.${name}"] = it }
+        }
+        repos.forEach { (name, path) ->
             val poms = searchPoms(path, 0)
-            poms.forEach {
-                changeVersion(name, it)
-            }
+            poms.forEach { changeVersion(name, it) }
         }
     }
 
@@ -73,7 +75,7 @@ class ChangeVersion(val project: Project) {
         val saxBuilder = SAXBuilder()
         val document = saxBuilder.build(file)
 
-        val name = module.takeIf { !file.path.contains("platform") } ?: "platform"
+        val name = module.takeIf { !file.path.contains("platform") } ?: "framework"
         if (updateParent(document) or updateSelf(document, name) or updateProperties(document) or updateDependencies(document) or updatePlugins(document)) {
             writeFile(document, file)
         }
@@ -111,7 +113,11 @@ class ChangeVersion(val project: Project) {
     private fun updateProperties(document: Document) :Boolean {
         var update = false
         XPathHelper.getElements(document, "/ns:project/ns:properties/*").forEach {
-            val elementName = toHyphen(it.name.replace("Version",""))
+            val elementName: String = if (it.name.endsWith("Version")) {
+                toHyphen(it.name.replace("Version",""))
+            } else{
+                it.name
+            }
             versions[elementName]?.let { version ->
                 if (it.text != version.toString()) {
                     it.setText(version.toString())
