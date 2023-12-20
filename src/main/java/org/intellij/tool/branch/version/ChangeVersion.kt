@@ -197,7 +197,7 @@ class ChangeVersion(val project: Project) {
         return camelCaseBuilder.toString()
     }
 
-    fun toHyphen(camelCase: String): String {
+    private fun toHyphen(camelCase: String): String {
         // Use regular expression to match camel case
         val regexPattern = "([a-z0-9])([A-Z])"
 
