@@ -74,50 +74,54 @@ class ChangeVersion(val project: Project) {
         val document = saxBuilder.build(file)
 
         val name = module.takeIf { !file.path.contains("platform") } ?: "platform"
-        updateParent(document)
-        updateSelf(document, name)
-        updateProperties(document)
-        updateDependencies(document)
-        updatePlugins(document)
-
-        writeFile(document, file)
+        if (updateParent(document) || updateSelf(document, name) || updateProperties(document) || updateDependencies(document) || updatePlugins(document)) {
+            writeFile(document, file)
+        }
     }
 
-    private fun updateParent(document: Document) {
-        val group = XPathHelper.getElement(document, "/ns:project/ns:parent/ns:groupId") ?: return
-        val version = XPathHelper.getElement(document, "/ns:project/ns:parent/ns:version") ?: return
+    private fun updateParent(document: Document) :Boolean {
+        val group = XPathHelper.getElement(document, "/ns:project/ns:parent/ns:groupId") ?: return false
+        val version = XPathHelper.getElement(document, "/ns:project/ns:parent/ns:version") ?: return false
         takeIf { group.text.contains("com.q7link") } ?. let {
            version.run {
                versions["framework"]?.let {
                    this.setText(it.toString())
+                   return this.text != it.toString()
                }
            }
         }
+        return false
     }
 
-    private fun updateSelf(document: Document, module: String) {
-        val version = XPathHelper.getElement(document, "/ns:project/ns:version") ?: return
+    private fun updateSelf(document: Document, module: String) :Boolean {
+        val version = XPathHelper.getElement(document, "/ns:project/ns:version") ?: return false
         version.run {
             versions[module]?.let {
                 this.setText(it.toString())
+                return this.text != it.toString()
             }
         }
+        return false
     }
 
-    private fun updateProperties(document: Document) {
+    private fun updateProperties(document: Document) :Boolean {
+        var update = false
         XPathHelper.getElements(document, "/ns:project/ns:properties").forEach {
             val elementName = it.text.replace("Version","")
             versions[elementName]?.let { version ->
                 it.setText(version.toString())
+                update = update || (it.text != version.toString())
             }
         }
+        return update
     }
 
-    private fun updateDependencies(document: Document) {
+    private fun updateDependencies(document: Document) :Boolean {
+        var update = false
         XPathHelper.getElements(document, "/ns:project/ns:dependencies/ns:dependency").forEach {
-            val groupNode = it.getChild("groupId", it.namespace) ?:return
-            val artifactNode = it.getChild("artifactId", it.namespace) ?:return
-            val versionNode = it.getChild("version", it.namespace) ?:return
+            val groupNode = it.getChild("groupId", it.namespace) ?: return@forEach
+            val artifactNode = it.getChild("artifactId", it.namespace) ?: return@forEach
+            val versionNode = it.getChild("version", it.namespace) ?: return@forEach
             val scopeNode = it.getChild("scope", it.namespace)
             if (scopeNode != null && scopeNode.text == "test") {
                 return@forEach
@@ -134,15 +138,18 @@ class ChangeVersion(val project: Project) {
             }
             versions[artifactId]?.let { version ->
                 versionNode.setText(version.toString())
+                update = update || (versionNode.text != version.toString())
             }
         }
+        return update
     }
 
-    private fun updatePlugins(document: Document) {
+    private fun updatePlugins(document: Document) :Boolean {
+        var update = false
         XPathHelper.getElements(document, "/ns:project/ns:build/ns:plugins/ns:plugin").forEach {
-            val groupNode = it.getChild("groupId", it.namespace) ?:return
-            val versionNode = it.getChild("version", it.namespace) ?:return
-            val artifactNode = it.getChild("artifactId", it.namespace) ?:return
+            val groupNode = it.getChild("groupId", it.namespace) ?: return@forEach
+            val versionNode = it.getChild("version", it.namespace) ?: return@forEach
+            val artifactNode = it.getChild("artifactId", it.namespace) ?: return@forEach
             if (groupNode.text != "com.q7link.framework") {
                 return@forEach
             }
@@ -151,8 +158,10 @@ class ChangeVersion(val project: Project) {
             }
             versions[artifactNode.text]?.let { version ->
                 versionNode.setText(version.toString())
+                update = update || (versionNode.text != version.toString())
             }
         }
+        return update
     }
 
     private fun writeFile(document: Document, file: File) {
