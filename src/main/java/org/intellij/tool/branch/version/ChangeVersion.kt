@@ -1,6 +1,7 @@
 package org.intellij.tool.branch.version
 
 import com.intellij.openapi.project.Project
+import com.intellij.util.io.write
 import org.intellij.tool.utils.GitLabUtil
 import org.intellij.tool.utils.XPathHelper
 import org.jdom2.Document
@@ -14,6 +15,7 @@ import java.io.FileWriter
 import java.io.InputStream
 import java.nio.file.Paths
 import java.util.*
+import kotlin.io.path.readText
 
 
 class ChangeVersion(val project: Project) {
@@ -155,5 +157,8 @@ class ChangeVersion(val project: Project) {
 
     private fun writeFile(document: Document, file: File) {
         XMLOutputter(Format.getRawFormat()).output(document, FileWriter(file.path))
+
+        val content = Paths.get(file.path).readText(Charsets.UTF_8).replace("""<?xml version="1.0" encoding="UTF-8"?>""", """<?xml version='1.0' encoding='UTF-8'?>""")
+        Paths.get(file.path).write(content, Charsets.UTF_8)
     }
 }
