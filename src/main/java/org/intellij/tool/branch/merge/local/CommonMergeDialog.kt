@@ -180,7 +180,7 @@ class CommonMergeDialog(
         val target = branchTarget.getText()!!
         val module = moduleBox.getText()
         val commonRepos = GitLabUtil.getCommonRepositories(project, source, target).filter {
-            module == "交集分支的全部工程" || module == it.root.name
+            module?.endsWith("全部工程") ?: false || module == it.root.name
         }
         val callInAwtLater = Runnable {
             withExceptionRun {
