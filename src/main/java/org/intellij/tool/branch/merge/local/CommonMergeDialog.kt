@@ -159,7 +159,7 @@ class CommonMergeDialog(
             validators.add(ValidationInfo("工程模块必填", moduleBox))
         }
         val commonRepos = GitLabUtil.getCommonRepositories(project, source, target).filter {
-            module == "交集分支的全部工程" || module == it.root.name
+            module?.endsWith("全部工程") ?: false || module == it.root.name
         }
         if (commonRepos.isEmpty()) {
             validators.add(ValidationInfo("来源和目标分支不存在交集工程", moduleBox))
