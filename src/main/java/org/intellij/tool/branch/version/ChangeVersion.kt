@@ -1,5 +1,6 @@
 package org.intellij.tool.branch.version
 
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.util.io.write
 import org.intellij.tool.utils.GitLabUtil
@@ -24,6 +25,10 @@ class ChangeVersion(val project: Project) {
 
     private val ignore = listOf("autotest-frame-starter", "dbtools", "grpc-clients")
 
+    companion object {
+        val log = logger<ChangeVersion>()
+    }
+
     private fun getConfigVersion(): MutableMap<Any, Any> {
         val yaml = Yaml()
         val configFile: File = Paths.get("${project.basePath}/apps/build", "config.yaml").toFile()
@@ -46,13 +51,17 @@ class ChangeVersion(val project: Project) {
     }
 
     fun run(branch: String) {
-        val repos = GitLabUtil.getCommonRepositories(project, branch).associateBy ( {it.root.name}, {it.root.path})
-        repos.filter { it.value.contains("platform") }.keys.filter { !versions.containsKey(it) }.forEach { name ->
-            versions["framework"] ?.let { versions["version.framework.${name}"] = it }
-        }
-        repos.forEach { (name, path) ->
-            val poms = searchPoms(path, 0)
-            poms.forEach { changeVersion(name, it) }
+        try {
+            val repos = GitLabUtil.getCommonRepositories(project, branch).associateBy ( {it.root.name}, {it.root.path})
+            repos.filter { it.value.contains("platform") }.keys.filter { !versions.containsKey(it) }.forEach { name ->
+                versions["framework"] ?.let { versions["version.framework.${name}"] = it }
+            }
+            repos.forEach { (name, path) ->
+                val poms = searchPoms(path, 0)
+                poms.forEach { changeVersion(name, it) }
+            }
+        } catch (e: Throwable) {
+            log.error(e)
         }
     }
 
