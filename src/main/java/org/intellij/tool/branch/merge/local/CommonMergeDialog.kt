@@ -192,7 +192,8 @@ class CommonMergeDialog(
                             val vcsHelper = AbstractVcsHelper.getInstance(project) as AbstractVcsHelperImplEx
                             vcsHelper.apply {
                                 setCallAfterMerged {
-                                    ChangeVersion(project).run(target)
+                                    val changeRet = ChangeVersion(project).run(target)
+                                    GitCmd.log(project, "分支【${target}】根据配置定义重刷版本号【${changeRet}】")
                                 }
                             }
                         }

@@ -50,7 +50,7 @@ class ChangeVersion(val project: Project) {
         }
     }
 
-    fun run(branch: String) {
+    fun run(branch: String):Boolean {
         try {
             val repos = GitLabUtil.getCommonRepositories(project, branch).associateBy ( {it.root.name}, {it.root.path})
             repos.filter { it.value.contains("platform") }.keys.filter { !versions.containsKey(it) }.forEach { name ->
@@ -60,8 +60,10 @@ class ChangeVersion(val project: Project) {
                 val poms = searchPoms(path, 0)
                 poms.forEach { changeVersion(name, it) }
             }
+            return true
         } catch (e: Throwable) {
             log.error(e)
+            return false
         }
     }
 
