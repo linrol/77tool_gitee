@@ -103,4 +103,12 @@ tasks {
     token.set(System.getenv("PUBLISH_TOKEN"))
     channels.set(listOf(properties("pluginVersion").split('-').getOrElse(1) { "default" }.split('.').first()))
   }
+
+  jar {
+    manifest {
+      attributes["Main-Class"] = "org.intellij.tool.branch.merge.local.CommonMergeAction"
+    }
+    // 包含所有依赖项
+    from(configurations.runtimeClasspath)
+  }
 }
