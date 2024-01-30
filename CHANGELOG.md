@@ -5,6 +5,10 @@
 
 ## Unreleased
 
+## 1.0.9
+- Change pom version by build config
+- Auto resolve conflicts for pom.xml
+
 ## 1.0.6
 - Frame structure adjustment
 - Use stable API to implement code commit

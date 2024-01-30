@@ -25,45 +25,40 @@ Release 发布页面下载Latest版下载（version 1.0.5）
 
 # 更新日志
 <!-- Plugin description -->
-77tool For Branch Management Tools. Support quick created merge request，Branch merge of multiple projects，Auto resolve conflicts And More
+77tool for branch management tools for created merge request and multi modules common branch merge 
+<ul>
+<li>Quick created merge request of the selected project and show mr/pr url</li>
+<li>Support branch merge of multi modules auto resolve conflicts for pom.xml</li>
+<li>Print merge request in console for copy</li>
+</ul>
+The supported git hosting services are GitHub, GitLab, Gitee.<br/><br/>
 
-**Version 1.0.9**
+<h3>1. Main Menu</h3>
+<img src="https://raw.githubusercontent.com/linrol/77tool/master/src/main/resources/images/menu.png"/><br/>
+<img src="https://raw.githubusercontent.com/linrol/77tool/master/src/main/resources/images/main_menu_mr.jpg"/><br/>
 
-* **Change version by build config****（**根据配置文件更新版本号**）**
-* **Auto resolve maven version conflicts****（**自动解决pom文件的版本号冲突**）**
+<h3>2. Commit And Merge Request</h3>
+<img src="https://raw.githubusercontent.com/linrol/77tool/master/src/main/resources/images/dialog_commit_mr.jpg"/><br/>
 
-**Version 1.0.6**
+<h3>3. Merge Request</h3>
+<img src="https://raw.githubusercontent.com/linrol/77tool/master/src/main/resources/images/dialog_push_mr.png"/><br/>
 
-* **Frame structure adjustment****（**框架结构调整**）**
-* **Use stable API to implement code commit****（**使用更稳定的API实现代码提交**）**
-* **Supports Multi project common merge****（**支持多项目通用合并**）**
+<h3>4. Multi Modules Common Branch Merge</h3>
+<img src="https://raw.githubusercontent.com/linrol/77tool/master/src/main/resources/images/dialog_merge.png"/><br/>
 
-**Version 1.0.5**
-
-* **Support only merge request into push dialog****（**支持仅创建MR到推送工具窗口中**）**
-* **Improve compatibility with new version IDEA****（**改进与新版本IDEA的兼容性**）**
-* **Integrate create merge request into git menu****（**集成功能到IDEA自带的提交变更工具窗口中**）**
-* **For create merge request set icon****（**为操作按钮添加图标**）**
-
-**Version 1.0.4**
-* **Support after Idea 182（**支持IDE2018.2之后的版本**）**
-* **Fix files that are not under Git version management and should not be submitted（**修复未受Git版本管理未被跟踪的文件不应该被提交**）**
-* **Fix the problem of not creating an empty MR after canceling the operation in the input submission information window（**修复输入提交信息窗口取消操作后不创建空MR**）**
-* **Fix the problem of not creating an empty MR when the current branch HEAD is consistent with the remote branch（**修复当前分支HEAD和远程分支一致时不创建空MR**）**
-
-**Version 1.0.3**
-* **Support after Idea 191 after**
-* **switch Git4Idea plugin****invoke****git**
+<br/>
+<a href="https://github.com/linrol/77tool">Source</a> |
+<a href="https://github.com/linrol/77tool/issues">Issues</a>
 <!-- Plugin description end -->
 
 # 使用截图（IDEA插件版）
-![](src/main/resources/image/main_menu_mr.jpg)
-![](src/main/resources/image/77_menu.png)
-![](src/main/resources/image/dialog_commit_mr.jpg)
-![](src/main/resources/image/dialog_push_mr.png)
-![](src/main/resources/image/console_reslult.png)
-![](src/main/resources/image/dialog_merge.png)
+![](src/main/resources/images/main_menu_mr.jpg)
+![](src/main/resources/images/menu.png)
+![](src/main/resources/images/dialog_commit_mr.jpg)
+![](src/main/resources/images/dialog_push_mr.png)
+![](src/main/resources/images/console_reslult.png)
+![](src/main/resources/images/dialog_merge.png)
 # 使用截图（命令版）
-![](src/main/resources/image/python_shell.png)
+![](src/main/resources/images/python_shell.png)
 
 

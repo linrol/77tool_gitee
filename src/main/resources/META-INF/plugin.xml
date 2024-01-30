@@ -10,6 +10,10 @@
     <description><![CDATA[ 77tool for branch. support branch quick created mr、delete local branch an more]]></description>
 
     <change-notes><![CDATA[
+        <b>1.0.9 Change Log:</b><br>
+        <li>Change pom version by build config</li>
+        <li>Auto resolve conflicts for pom.xml</li>
+        <br>
         <b>1.0.6 Change Log:</b><br>
         <li>Frame structure adjustment</li>
         <li>Use stable API to implement code commit</li>
