@@ -25,6 +25,13 @@ Release 发布页面下载Latest版下载（version 1.0.5）
 
 # 更新日志
 <!-- Plugin description -->
+77tool For Branch Management Tools. Support quick created merge request，Branch merge of multiple projects，Auto resolve conflicts And More
+
+**Version 1.0.9**
+
+* **Change version by build config****（**根据配置文件更新版本号**）**
+* **Auto resolve maven version conflicts****（**自动解决pom文件的版本号冲突**）**
+
 **Version 1.0.6**
 
 * **Frame structure adjustment****（**框架结构调整**）**
