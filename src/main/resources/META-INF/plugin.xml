@@ -1,7 +1,7 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
     <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
-    <id>org.intellij.77tool</id>
+    <id>org.linrol.77tool</id>
     <name>77tool</name>
     <version>1.0.6</version>
     <vendor email="linrol@gmail.com" url="https://github.com/linrol/77tool">LuoLin</vendor>
