@@ -22,7 +22,6 @@ class PushAndBuildAction: PushActionBase("Push And Build") {
             val repos = dialog.selectedPushSpecs.values.flatMap { it.map { obj -> obj.repository } }
             dialog.push(false)
             if (dialog.canPush()) {
-                GitCmd.log(project, "size:${repos.size}")
                 repos.forEach {
                     // 实现逻辑
                     val gitRepository = it as GitRepository
