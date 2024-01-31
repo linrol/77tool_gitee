@@ -9,7 +9,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 @State(name = "org.intellij.tool.state.ToolSettingsStat", storages = [Storage("77toolSettingsPlugin.xml")])
 class ToolSettingsState : PersistentStateComponent<ToolSettingsState?> {
     // push后触发编译
-    var buildAfterPush: Boolean = false
+    var buildAfterPush: Boolean = true
 
     var buildUrl: String = "http://ops.q7link.com:8000/qqdeploy/projectbuild/"
 

@@ -25,9 +25,9 @@ class PushAndBuildAction: PushActionBase("Push And Build") {
                 repos.forEach {
                     // 实现逻辑
                     val gitRepository = it as GitRepository
-                    val name = gitRepository.root.name
+                    val path = gitRepository.remotes.first().firstUrl?.substringAfter("com/")?.substringBefore(".git") ?: gitRepository.root.name
                     val branch = gitRepository.currentBranchName.toString()
-                    opsBuild(project, name, branch)
+                    opsBuild(project, path, branch)
                 }
             }
             close(dialog, DialogWrapper.OK_EXIT_CODE)
