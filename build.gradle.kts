@@ -12,6 +12,10 @@ plugins {
   id("org.jetbrains.intellij") version "1.5.2"
   // Gradle Changelog Plugin
   id("org.jetbrains.changelog") version "2.0.0"
+  // dependenciesUpdates
+  id("com.github.ben-manes.versions") version "0.39.0"
+  // shadow build jar
+  id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 group = properties("pluginGroup")
@@ -27,6 +31,7 @@ repositories {
 
 dependencies {
   implementation ("org.jdom:jdom2:2.0.6.1")
+  implementation ("com.squareup.okhttp3:okhttp:4.9.1")
 }
 
 // Configure Gradle IntelliJ Plugin
@@ -110,5 +115,12 @@ tasks {
     }
     // 包含所有依赖项
     from(configurations.runtimeClasspath)
+  }
+
+  shadowJar {
+    manifest {
+      attributes["Main-Class"] = "org.intellij.tool.branch.merge.local.CommonMergeAction"
+    }
+    archiveClassifier.set("")
   }
 }

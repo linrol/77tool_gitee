@@ -11,6 +11,10 @@ class ToolSettingsState : PersistentStateComponent<ToolSettingsState?> {
     // push后触发编译
     var buildAfterPush: Boolean = false
 
+    var buildUrl: String = "http://ops.q7link.com:8000/qqdeploy/projectbuild/"
+
+    var buildUser: String = "77tool"
+
     override fun getState(): ToolSettingsState {
         return this
     }

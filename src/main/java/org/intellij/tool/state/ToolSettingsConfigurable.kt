@@ -23,15 +23,19 @@ class ToolSettingsConfigurable : Configurable {
     }
 
     override fun isModified(): Boolean {
-        return toolSettingsComponent.getBuildAfterPush() != ToolSettingsState.instance.buildAfterPush
+        return toolSettingsComponent.isModified();
     }
 
     override fun apply() {
         ToolSettingsState.instance.buildAfterPush = toolSettingsComponent.getBuildAfterPush()
+        ToolSettingsState.instance.buildUrl = toolSettingsComponent.getBuildUrl()
+        ToolSettingsState.instance.buildUser = toolSettingsComponent.getBuildUser()
     }
 
     override fun reset() {
         toolSettingsComponent.setBuildAfterPush(ToolSettingsState.instance.buildAfterPush)
+        toolSettingsComponent.setBuildUrl(ToolSettingsState.instance.buildUrl)
+        toolSettingsComponent.setBuildUser(ToolSettingsState.instance.buildUser)
     }
 
     override fun disposeUIResources() {

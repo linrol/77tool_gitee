@@ -93,6 +93,13 @@
             <add-to-group group-id="Vcs.Push.Actions" anchor="after" relative-to-action="Vcs.Push.Force"/>
         </action>
 
+        <!-- Push And Ops Build -->
+        <action id="org.intellij.tool.branch.push.PushAndBuildAction" class="org.intellij.tool.branch.push.PushAndBuildAction"
+          text="Push And Ops Build"
+          description="Push And Ops Build">
+            <add-to-group group-id="Vcs.Push.Actions" anchor="after" relative-to-action="org.intellij.tool.branch.merge.request.MergeRequestAction"/>
+        </action>
+
         <!-- Local Common Merge -->
         <action id="org.intellij.tool.branch.merge.local.CommonMergeAction" class="org.intellij.tool.branch.merge.local.CommonMergeAction"
                 text="Common Merge"
