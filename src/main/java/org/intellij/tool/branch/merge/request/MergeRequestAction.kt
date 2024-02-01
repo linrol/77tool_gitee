@@ -7,6 +7,7 @@ import com.intellij.dvcs.push.ui.VcsPushUi
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
+import git4idea.GitUtil
 import git4idea.repo.GitRepository
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.intellij.tool.branch.command.GitCommand
@@ -25,11 +26,13 @@ class MergeRequestAction : PushActionBase("Merge Request") {
     override fun actionPerformed(project: Project, dialog: VcsPushUi) {
         try {
             GitCmd.clear()
-            dialog.selectedPushSpecs.values.flatMap { it.map { obj: PushInfo -> obj.repository } }.forEach {
+            val repoRoots = dialog.selectedPushSpecs.values.flatMap { it.map { obj: PushInfo -> obj.repository } }.map {
                 // 实现逻辑
                 val cmd = GitCmd(project, it as GitRepository)
                 GitCommand.push(cmd)
+                it.root
             }
+            GitUtil.refreshVfsInRoots(repoRoots)
             close(dialog, DialogWrapper.OK_EXIT_CODE)
         } catch (e: RuntimeException) {
             e.printStackTrace()

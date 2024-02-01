@@ -5,6 +5,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.openapi.vcs.changes.Change
 import com.intellij.openapi.vcs.changes.CommitSession
+import git4idea.GitUtil
 import git4idea.GitVcs
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.intellij.tool.branch.command.GitCommand.push
@@ -29,9 +30,11 @@ class CommitMergeRequestSession(private val project: Project) : CommitSession {
                 throw RuntimeException("请输入提交消息")
             }
             checkinEnvironment.commit(changeList, commitMessage)
-            GitLabUtil.getRepositories(project, changeList).forEach {
+            val repoRoots = GitLabUtil.getRepositories(project, changeList).map {
                 push(GitCmd(project, it))
+                it.root
             }
+            GitUtil.refreshVfsInRoots(repoRoots)
         } catch (e: RuntimeException) {
             e.printStackTrace()
             GitCmd.log(project, ExceptionUtils.getRootCauseMessage(e))
