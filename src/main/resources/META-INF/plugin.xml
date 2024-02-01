@@ -67,7 +67,7 @@
         <projectService serviceInterface="com.intellij.openapi.vcs.AbstractVcsHelper"
           serviceImplementation="org.intellij.tool.extend.vcs.AbstractVcsHelperImplEx" overrides="true"/>
 
-        <!--<pushDialogActionsProvider implementation="org.intellij.tool.branch.push.PushAndBuildActionProvider"/>-->
+        <!--<pushDialogActionsProvider implementation="org.intellij.tool.branch.build.OpsBuildAfterPushActionProvider"/>-->
     </extensions>
     <actions>
         <!-- 77tool组 -->
@@ -94,7 +94,7 @@
         </action>
 
         <!-- Push And Ops Build -->
-        <action id="org.intellij.tool.branch.push.PushAndBuildAction" class="org.intellij.tool.branch.push.PushAndBuildAction"
+        <action id="org.intellij.tool.branch.build.OpsBuildAfterPushAction" class="org.intellij.tool.branch.build.OpsBuildAfterPushAction"
           text="Push And Ops Build"
           description="Push And Ops Build">
             <add-to-group group-id="Vcs.Push.Actions" anchor="after" relative-to-action="org.intellij.tool.branch.merge.request.MergeRequestAction"/>

@@ -114,13 +114,9 @@ tasks {
       attributes["Main-Class"] = "org.intellij.tool.branch.merge.local.CommonMergeAction"
     }
     // 包含所有依赖项
-    from(configurations.runtimeClasspath)
-  }
-
-  shadowJar {
-    manifest {
-      attributes["Main-Class"] = "org.intellij.tool.branch.merge.local.CommonMergeAction"
-    }
-    archiveClassifier.set("")
+    from(configurations.runtimeClasspath.get().map {
+      if (it.isDirectory) it else zipTree(it)
+    })
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
   }
 }

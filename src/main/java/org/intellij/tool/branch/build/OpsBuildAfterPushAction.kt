@@ -1,4 +1,4 @@
-package org.intellij.tool.branch.push
+package org.intellij.tool.branch.build
 
 import com.google.gson.JsonParser
 import com.intellij.dvcs.push.ui.PushActionBase
@@ -15,13 +15,14 @@ import org.apache.commons.lang3.exception.ExceptionUtils
 import org.intellij.tool.model.GitCmd
 import org.intellij.tool.state.ToolSettingsState
 
-class PushAndBuildAction: PushActionBase("Push And Build") {
+class OpsBuildAfterPushAction: PushActionBase("Push And Build") {
     override fun actionPerformed(project: Project, dialog: VcsPushUi) {
         try {
             GitCmd.clear()
             val repos = dialog.selectedPushSpecs.values.flatMap { it.map { obj -> obj.repository } }
             dialog.push(false)
             if (dialog.canPush()) {
+                Thread.sleep(5000)
                 repos.forEach {
                     // 实现逻辑
                     val gitRepository = it as GitRepository
@@ -82,7 +83,7 @@ class PushAndBuildAction: PushActionBase("Push And Build") {
     }
 
     companion object {
-        private val logger = logger<PushAndBuildAction>()
+        private val logger = logger<OpsBuildAfterPushAction>()
     }
 
 }

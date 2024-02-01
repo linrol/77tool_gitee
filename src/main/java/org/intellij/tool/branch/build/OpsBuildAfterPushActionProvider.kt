@@ -1,4 +1,4 @@
-package org.intellij.tool.branch.push
+package org.intellij.tool.branch.build
 
 import com.intellij.dvcs.push.PushDialogActionsProvider
 import com.intellij.dvcs.push.ui.PushActionBase
@@ -7,7 +7,7 @@ import com.intellij.openapi.project.Project
 import org.intellij.tool.state.ToolSettingsState
 import org.jetbrains.annotations.Nls
 
-class PushAndBuildActionProvider : PushDialogActionsProvider {
+class OpsBuildAfterPushActionProvider : PushDialogActionsProvider {
     override fun getCustomActionsAboveDefault(project: Project): List<PushActionBase> {
         return listOf<PushActionBase>(PushAndBuildAction())
     }

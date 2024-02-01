@@ -31,22 +31,8 @@ Release 发布页面下载Latest版下载（version 1.0.5）
 <li>Support branch merge of multi modules auto resolve conflicts for pom.xml</li>
 <li>Print merge request in console for copy</li>
 </ul>
-The supported git hosting services are GitHub, GitLab, Gitee.<br/><br/>
-
-<h3>1. Main Menu</h3>
-<img src="https://raw.githubusercontent.com/linrol/77tool/master/src/main/resources/images/menu.png"/><br/>
-<img src="https://raw.githubusercontent.com/linrol/77tool/master/src/main/resources/images/main_menu_mr.jpg"/><br/>
-
-<h3>2. Commit And Merge Request</h3>
-<img src="https://raw.githubusercontent.com/linrol/77tool/master/src/main/resources/images/dialog_commit_mr.jpg"/><br/>
-
-<h3>3. Merge Request</h3>
-<img src="https://raw.githubusercontent.com/linrol/77tool/master/src/main/resources/images/dialog_push_mr.png"/><br/>
-
-<h3>4. Multi Modules Common Branch Merge</h3>
-<img src="https://raw.githubusercontent.com/linrol/77tool/master/src/main/resources/images/dialog_merge.png"/><br/>
-
 <br/>
+The supported git hosting services are GitHub, GitLab, Gitee.<br/><br/>
 <a href="https://github.com/linrol/77tool">Source</a> |
 <a href="https://github.com/linrol/77tool/issues">Issues</a>
 <!-- Plugin description end -->
