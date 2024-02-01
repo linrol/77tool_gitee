@@ -27,7 +27,6 @@ class OpsBuildAfterPushAction: PushActionBase("Push And Build") {
                 Thread.sleep(5000)
                 reposBuild(project, repos)
             }
-            close(dialog, DialogWrapper.OK_EXIT_CODE)
         } catch (e: RuntimeException) {
             e.printStackTrace()
             GitCmd.log(project, ExceptionUtils.getRootCauseMessage(e))
