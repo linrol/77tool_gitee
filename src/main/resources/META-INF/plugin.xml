@@ -3,13 +3,17 @@
     <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
     <id>org.linrol.77tool</id>
     <name>77tool</name>
-    <version>1.0.6</version>
+    <version>1.1.0</version>
     <vendor email="linrol@gmail.com" url="https://github.com/linrol/77tool">LuoLin</vendor>
 
     <!-- The description will replace by gradle's generated from README.md -->
     <description><![CDATA[ 77tool for branch. support branch quick created mr、delete local branch an more]]></description>
 
     <change-notes><![CDATA[
+        <b>1.1.0 Change Log:</b><br>
+        <li>Support trigger ops build after push</li>
+        <li>Fix vfs not refreshed after merge request created</li>
+        <br>
         <b>1.0.9 Change Log:</b><br>
         <li>Change pom version by build config</li>
         <li>Auto resolve conflicts for pom.xml</li>

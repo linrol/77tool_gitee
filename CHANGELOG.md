@@ -5,6 +5,10 @@
 
 ## Unreleased
 
+## 1.1.0
+- Support trigger ops build after push
+- Fix vfs not refreshed after merge request created
+
 ## 1.0.9
 - Change pom version by build config
 - Auto resolve conflicts for pom.xml

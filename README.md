@@ -20,7 +20,7 @@
 Usage：77tool mr
 
 # 下载
-Release 发布页面下载Latest版下载（version 1.0.5）
+Release 发布页面下载Latest版下载（version 1.1.0）
 
 
 # 更新日志
