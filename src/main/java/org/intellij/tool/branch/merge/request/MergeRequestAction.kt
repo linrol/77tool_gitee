@@ -10,11 +10,12 @@ import com.intellij.openapi.ui.DialogWrapper
 import git4idea.GitUtil
 import git4idea.repo.GitRepository
 import org.apache.commons.lang3.exception.ExceptionUtils
+import org.intellij.tool.base.BasePushAction
 import org.intellij.tool.branch.command.GitCommand
 import org.intellij.tool.model.GitCmd
 import org.jetbrains.annotations.Nls
 
-class MergeRequestAction : PushActionBase("Merge Request") {
+class MergeRequestAction : BasePushAction("Merge Request") {
     override fun isEnabled(dialog: VcsPushUi): Boolean {
         return true
     }

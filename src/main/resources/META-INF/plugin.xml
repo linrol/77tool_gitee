@@ -7,7 +7,19 @@
     <vendor email="linrol@gmail.com" url="https://github.com/linrol/77tool">LuoLin</vendor>
 
     <!-- The description will replace by gradle's generated from README.md -->
-    <description><![CDATA[ 77tool for branch. support branch quick created mr、delete local branch an more]]></description>
+    <description><![CDATA[
+        77tool for branch management tools for created merge request and multi modules common branch merge
+        <ul>
+        <li>Quick created merge request of the selected project and show mr/pr url</li>
+        <li>Support branch merge of multi modules auto resolve conflicts for pom.xml</li>
+        <li>Print merge request in console for copy</li>
+        </ul>
+        <br/>
+        The supported git hosting services are GitHub, GitLab, Gitee.<br/><br/>
+        <a href="https://github.com/linrol/77tool">Source</a> |
+        <a href="https://github.com/linrol/77tool/issues">Issues</a>
+    ]]>
+    </description>
 
     <change-notes><![CDATA[
         <b>1.1.0 Change Log:</b><br>
@@ -100,7 +112,7 @@
         <!-- Push And Ops Build -->
         <action id="org.intellij.tool.branch.build.OpsBuildAfterPushAction" class="org.intellij.tool.branch.build.OpsBuildAfterPushAction"
           text="Push And Ops Build"
-          description="Push And Ops Build">
+          description="Push and ops build">
             <add-to-group group-id="Vcs.Push.Actions" anchor="after" relative-to-action="org.intellij.tool.branch.merge.request.MergeRequestAction"/>
         </action>
 

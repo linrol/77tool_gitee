@@ -7,6 +7,6 @@ import org.intellij.tool.branch.commit.extension.CommitMergeRequestExecutor.Comp
 
 class CommitMergeRequestAction : AbstractCommitChangesAction() {
     override fun getExecutor(project: Project): CommitExecutor {
-        return getInstance(project)
+        return getInstance()
     }
 }

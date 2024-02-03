@@ -6,7 +6,7 @@ fun properties(key: String) = project.findProperty(key).toString()
 plugins {
   id("java")
   // Kotlin support
-  id("org.jetbrains.kotlin.jvm") version "1.8.0"
+  id ("org.jetbrains.kotlin.jvm") version "1.6.0"
   // Gradle IntelliJ Plugin
   // https://github.com/jetbrains/gradle-intellij-plugin/releases/latest
   id("org.jetbrains.intellij") version "1.5.2"
@@ -14,8 +14,6 @@ plugins {
   id("org.jetbrains.changelog") version "2.0.0"
   // dependenciesUpdates
   id("com.github.ben-manes.versions") version "0.39.0"
-  // shadow build jar
-  id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 group = properties("pluginGroup")
@@ -31,7 +29,7 @@ repositories {
 
 dependencies {
   implementation ("org.jdom:jdom2:2.0.6.1")
-  implementation ("com.squareup.okhttp3:okhttp:4.9.1")
+  implementation ("com.squareup.okhttp3:okhttp:3.1.0")
 }
 
 // Configure Gradle IntelliJ Plugin
@@ -117,6 +115,7 @@ tasks {
     from(configurations.runtimeClasspath.get().map {
       if (it.isDirectory) it else zipTree(it)
     })
+    exclude("okhttp3/internal/Platform\$Android.class")
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
   }
 }

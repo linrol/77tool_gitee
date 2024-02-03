@@ -1,7 +1,6 @@
 package org.intellij.tool.branch.build
 
 import com.google.gson.JsonParser
-import com.intellij.dvcs.push.ui.PushActionBase
 import com.intellij.dvcs.push.ui.VcsPushDialog
 import com.intellij.dvcs.push.ui.VcsPushUi
 import com.intellij.dvcs.repo.Repository
@@ -14,10 +13,11 @@ import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.apache.commons.lang3.exception.ExceptionUtils
+import org.intellij.tool.base.BasePushAction
 import org.intellij.tool.model.GitCmd
 import org.intellij.tool.state.ToolSettingsState
 
-class OpsBuildAfterPushAction: PushActionBase("Push And Build") {
+class OpsBuildAfterPushAction: BasePushAction("Push And Build") {
     override fun actionPerformed(project: Project, dialog: VcsPushUi) {
         try {
             GitCmd.clear()
@@ -80,18 +80,17 @@ class OpsBuildAfterPushAction: PushActionBase("Push And Build") {
                 .add("byCaller", ToolSettingsState.instance.buildUser)
                 .build()
         val request = Request.Builder().url(ToolSettingsState.instance.buildUrl).post(body).build()
-        client.newCall(request).execute().use {
-
+        client.newCall(request).execute().let {
             if (it.isSuccessful) {
-                val jsonResponse = JsonParser.parseString(it.body?.string()).asJsonObject
+                val jsonResponse = JsonParser.parseString(it.body().string()).asJsonObject
                 val responseData = jsonResponse.get("data")
                 if (responseData != null) {
                     val taskId = responseData.asJsonObject.getAsJsonPrimitive("taskid").asString
                     GitCmd.log(project,"项目:${paths}触发独立编译成功，编译任务ID:${taskId}")
                 }
             } else {
-                logger.info("Response Error: ${it.code} - ${it.message}")
-                GitCmd.log(project,"Response Error: ${it.code} - ${it.message}")
+                logger.info("Response Error: ${it.code()} - ${it.message()}")
+                GitCmd.log(project,"Response Error: ${it.code()} - ${it.message()}")
             }
         }
     }
